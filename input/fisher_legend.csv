@@ -1,0 +1,21 @@
+Value,details,description
+11,Open Water ,water
+12,Perennial Ice/Snow ,water
+21,"Developed, Open Space ",developed
+22,"Developed, Low Intensity ",developed
+23,"Developed, Medium Intensity ",developed
+24,Developed High Intensity ,developed
+31,Barren Land (Rock/Sand/Clay ,barren
+41,Deciduous Forest ,forest
+42,Evergreen Forest ,forest
+43,Mixed Forest ,forest
+51,Dwarf Scrub ,shrubland
+52,Shrub/Scrub ,shrubland
+71,Grassland/Herbaceous ,herbaceous
+72,Sedge/Herbaceous ,herbaceous
+73,Lichens ,herbaceous
+74,Moss ,herbaceous
+81,Pasture/Hay ,cultivated
+82,Moss ,cultivated
+90,Woody Wetlands ,wetlands
+95,Emergent Herbaceous Wetlands ,wetlands

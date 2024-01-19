@@ -1,0 +1,15 @@
+{
+    "description": ":hammer_and_wrench:   A targets workflow for integrated step selection analyses (iSSA)",
+    "license": "other-open",
+    "upload_type": "software",
+    "creators": [
+        {
+            "affiliation": "@wildlifeevoeco",
+            "name": "Alec L. Robitaille"
+        },
+        {
+            "name": "Julie W. Turner"
+        }
+    ],
+    "access_right": "open"
+}
