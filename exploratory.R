@@ -134,34 +134,29 @@ ggsave(
 
 
 # Adding burn layer? ----
-# If I try to add as is, returns an error message:
+utmBurn <- st_transform(burns, utm)
 
-# Error in `geom_sf()`:
-# 	! Problem while converting geom to grob.
-# ℹ Error occurred in the 6th layer.
-# Caused by error:
-# 	! number of columns of matrices must match (see arg 18)
-# Run `rlang::last_trace()` to see where the error occurred.
+st_write(utmBurn, 'output/terra-nova-burns.gpkg')
+tnburns <- st_read('output/terra-nova-burns.gpkg')
 
+# If I try to add as is, returns an error message
+# need to remove the z-coord from the burns, apparently? Not sure why that works but it solves the problem
+tnburns <- st_zm(tnburns)
 
-# Burns is a collection of 21 fires, each of which are multi-polygons - maybe union & combine like for water features above will solve this issue?
-
-# Union and combine
-burnsunion <- st_union(st_combine(burns))
-utmburns <- st_transform(burns, utm)
-
-# this also isn't working... is it the whole set of burns, or is there just one problem?
-
-# pull out a random example
-unitc <- burns %>% filter(Burn_ID == 7)
-unitcUTM <- st_transform(unitc, utm)
-
-tnburn <- gtn +
-	geom_sf(fill = "goldenrod", size = 0.3, color = "darkred",
-					data = unitcUTM) +
-
-# Still returns the same error. The issue is something overall with the burns layer, seemingly
-
+# Fire map
+(gburn <- ggplot() +
+ 	geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
+ 	geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
+ 	geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
+ 	geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+ 	geom_sf(fill = "goldenrod", size = 0.3, color = "darkred",
+ 					data = tnburns) +
+ 	geom_sf(aes(color = highway), data = highway) +
+ 	scale_color_manual(values = roadpal) +
+ 	coord_sf(xlim = c(bb['xmin'], bb['xmax']),
+ 					 ylim = c(bb['ymin'], bb['ymax'])) +
+ 	guides("none") +
+ 	themeMap)
 
 ### Importing caribou data ----
 caribou <- read.csv('input/TNNP_ALL_Caribou.csv')
@@ -206,21 +201,54 @@ car_sf <- st_as_sf(x = car,
 												coords = c("X", "Y"),
 												crs = utm)
 
+
+# Final map caribou + burns ----
+(gcar <- ggplot() +
+ 	geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
+ 	geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
+ 	geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
+ 	geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+ 	geom_sf(fill = "goldenrod", colour = "darkred", size = 0.3,	data = tnburns) +
+ 	geom_sf(colour = "black", alpha = 0.3, size = 0.3,
+ 					data = car_sf) +
+ 	geom_sf(aes(color = highway), data = highway) +
+ 	scale_color_manual(values = roadpal) +
+ 	scale_fill_viridis(option = "C") +
+ 	coord_sf(xlim = c(bb['xmin'], bb['xmax']),
+ 					 ylim = c(bb['ymin'], bb['ymax'])) +
+ 	#guides("none") +
+ 	themeMap)
+
+ggsave(
+	'graphics/terra-nova-caribou-burns.png',
+	gcar,
+	width = 10,
+	height = 10,
+	dpi = 320
+)
+
+# Map caribou + burns, but colour coded by age ----
+# had to omit Ochre Hill fires where year == 0
+
 (gcar <- ggplot() +
 		geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
 		geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
 		geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
 		geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+		geom_sf(aes(fill = YEAR, colour = "darkred"), size = 0.3,
+						data = subset(tnburns, YEAR > 1)) +
+		geom_sf(colour = "black", alpha = 0.3, size = 0.3,
+						data = car_sf) +
 		geom_sf(aes(color = highway), data = highway) +
-		geom_sf(colour = "chocolate4", alpha = 0.3, size = 0.3, data = car_sf) +
 		scale_color_manual(values = roadpal) +
+		scale_fill_viridis(option = "C") +
 		coord_sf(xlim = c(bb['xmin'], bb['xmax']),
 						 ylim = c(bb['ymin'], bb['ymax'])) +
-		guides("none") +
+		#guides("none") +
 		themeMap)
 
 ggsave(
-	'graphics/terra-nova-caribou.png',
+	'graphics/terra-nova-caribou-burns-by-age.png',
 	gcar,
 	width = 10,
 	height = 10,
