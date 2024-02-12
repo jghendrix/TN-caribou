@@ -253,3 +253,31 @@ ggplot() +
 							 fill= "grey", color="black", size=0.25, alpha = 0.2)
 
 ggsave("Mapping_Rasters.png", width = 7, height = 7, dpi = "screen")
+
+
+
+
+
+### EXTRA ----
+## Adding burn layer to this, and zooming in ----
+# Project to UTM
+utmBurn <- st_transform(burns, utm)
+st_write(utmBurn, 'output/burn-polygons.gpkg')
+burnUTM <- st_read('output/burn-polygons.gpkg')
+
+
+(gnl <- ggplot(nl) +
+		geom_sf(fill = "lightgreen", color = "darkgreen", size = 0.3) +
+		geom_sf(data = burnUTM, fill = "goldenrod", colour = "darkred", size = 0.5) +
+		themeMap)
+
+
+
+
+ggsave(
+	'graphics/04-newfoundland.png',
+	gnl,
+	width = 7,
+	height = 7,
+	dpi = 320
+)

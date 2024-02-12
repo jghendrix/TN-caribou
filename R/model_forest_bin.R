@@ -2,6 +2,7 @@
 #' @export
 #' @author Julie W. Turner
 model_forest_bin <- function(DT) {
+#	DT <- DT %>% dplyr::mutate(forest = as.factor(forest), disturbed = as.factor(disturbed))
 	glmmTMB(
 		case_ ~ -1 +
 			I(log(sl_)) +

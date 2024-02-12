@@ -9,7 +9,8 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
 # Options -----------------------------------------------------------------
-tar_option_set(format = 'qs')
+tar_option_set(format = 'qs',
+							 workspace_on_error = T)
 
 
 
@@ -183,7 +184,7 @@ targets_model <- c(
 		model_prep,
 		prepare_model(tracks_extract)
 	),
-	tar_target(
+  tar_target(
 		model_lc,
 		model_land_cover(model_prep)
 	),
