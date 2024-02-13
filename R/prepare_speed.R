@@ -1,7 +1,7 @@
 #' @title Prepare speed calcs
 #' @export
 #' @author Julie W. Turner
-prep_speed <- function(DT, summary, params) {
+prepare_speed <- function(DT, summary, params) {
 	sum.distwater <- DT[,.(mean.water = mean(dist_to_water, na.rm = T),
 																 median.water = median(dist_to_water, na.rm = T),
 																 max.water = max(dist_to_water, na.rm = T)),

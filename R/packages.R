@@ -6,6 +6,7 @@ library(visNetwork)
 
 library(renv)
 library(conflicted)
+conflicts_prefer(raster::extract)
 
 library(data.table)
 

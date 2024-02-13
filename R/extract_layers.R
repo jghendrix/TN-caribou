@@ -4,8 +4,6 @@
 extract_layers <- function(DT, crs, lc, legend, elev, popdens, water) {
 	setDT(DT)
 
-	conflicts_prefer(raster::extract)
-
 	start <- c('x1_', 'y1_')
 	end <- c('x2_', 'y2_')
 

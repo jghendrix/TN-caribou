@@ -9,8 +9,7 @@ lapply(dir('R', '*.R', full.names = TRUE), source)
 
 
 # Options -----------------------------------------------------------------
-tar_option_set(format = 'qs',
-							 workspace_on_error = T)
+tar_option_set(format = 'qs')
 
 
 
@@ -184,7 +183,7 @@ targets_model <- c(
 		model_prep,
 		prepare_model(tracks_extract)
 	),
-  tar_target(
+	tar_target(
 		model_lc,
 		model_land_cover(model_prep)
 	),
@@ -218,7 +217,12 @@ targets_effects <- c(
 targets_speed <- c(
 	tar_target(
 		prep_speed,
-		prep_speed(DT  = model_prep, summary = indiv_summary, params = dist_parameters)),
+		prepare_speed(
+			DT = model_prep,
+			summary = indiv_summary,
+			params = dist_parameters
+		)
+	),
 	tar_target(
 		calc_speed_disturbed,
 		calc_speed(prep_speed, 'disturbed', seq = 0:1)
