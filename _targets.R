@@ -15,33 +15,33 @@ tar_option_set(format = 'qs')
 
 # Data --------------------------------------------------------------------
 # Path to fisher locs data
-locs_path <- file.path('input', 'fisher.csv')
+locs_path <- file.path('input', 'TNNP_ALL_Caribou.csv')
 
 # Path to land cover, legend
-lc_path <- file.path('input', 'lc.tif')
-legend_path <- file.path('input', 'fisher_legend.csv')
+#lc_path <- file.path('input', 'lc.tif')
+#legend_path <- file.path('input', 'fisher_legend.csv')
 
 # Path to elevation
-elev_path <- file.path('input', 'elev.tif')
+#elev_path <- file.path('input', 'elev.tif')
 
 # Path to population density
-popdens_path <- file.path('input', 'popdens.tif')
+#popdens_path <- file.path('input', 'popdens.tif')
 
 # Path to water
-water_path <- file.path('input', 'water.gpkg')
+#water_path <- file.path('input', 'water.gpkg')
 
 
 
 # Variables ---------------------------------------------------------------
 # Targets: prepare
-id_col <- 'id'
-datetime_col <- 't_'
-x_col <- 'x_'
-y_col <- 'y_'
-epsg <- 32618
+id_col <- 'Animal_ID'
+datetime_col <- 'DATETIME'
+x_col <- 'X'
+y_col <- 'Y'
+epsg <- 32621
 crs <- st_crs(epsg)
 crs_sp <- CRS(crs$wkt)
-tz <- 'America/New_York'
+tz <- 'America/St_Johns'
 
 # Targets: tracks
 # Split by: within which column or set of columns (eg. c(id, yr))
@@ -49,7 +49,7 @@ tz <- 'America/New_York'
 split_by <- id_col
 
 # Resampling rate
-rate <- minutes(30)
+rate <- minutes(120)
 
 # Tolerance
 tolerance <- minutes(5)
@@ -65,32 +65,32 @@ targets_data <- c(
 		locs_raw,
 		locs_path,
 		fread(!!.x)
-	),
-	tar_file_read(
-		lc,
-		lc_path,
-		raster(!!.x)
-	),
-	tar_file_read(
-		legend,
-		legend_path,
-		fread(!!.x)
-	),
-	tar_file_read(
-		elev,
-		elev_path,
-		raster(!!.x)
-	),
-	tar_file_read(
-		popdens,
-		popdens_path,
-		raster(!!.x)
-	),
-	tar_file_read(
-		water,
-		water_path,
-		st_read(!!.x)
-	)
+	)#,
+#	tar_file_read(
+#		lc,
+#		lc_path,
+#		raster(!!.x)
+#	),
+#	tar_file_read(
+#		legend,
+#		legend_path,
+#		fread(!!.x)
+#	),
+#	tar_file_read(
+#		elev,
+#		elev_path,
+#		raster(!!.x)
+#	),
+#	tar_file_read(
+#		popdens,
+#		popdens_path,
+#		raster(!!.x)
+#	),
+#	tar_file_read(
+#		water,
+#		water_path,
+#		st_read(!!.x)
+#	)
 )
 
 
