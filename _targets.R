@@ -17,9 +17,16 @@ tar_option_set(format = 'qs')
 # Path to fisher locs data
 locs_path <- file.path('input', 'TNNP_ALL_Caribou.csv')
 
-# Path to land cover, legend
-#lc_path <- file.path('input', 'lc.tif')
-#legend_path <- file.path('input', 'fisher_legend.csv')
+# Path to land covers
+lc_path <- file.path('input', '2024-03-12_Hermosilla_2019_land_cover.tif')
+legend_path <- file.path('input', 'cfs_legend.csv')
+
+# Alternative landcover from NALCMS, but CFS is better I think
+# nalcms_path <- file.path('input', '2024-03-12_NALCMS_30_m.tif')
+# nalcms_legend_path <- file.path('input', 'nalcms_legend.csv')
+
+# Path to burns
+burn_path <- file.path('input', 'Burn_Areas.gpkg')
 
 # Path to elevation
 #elev_path <- file.path('input', 'elev.tif')
@@ -65,17 +72,37 @@ targets_data <- c(
 		locs_raw,
 		locs_path,
 		fread(!!.x)
-	)#,
+	),
+
+	tar_file_read(
+		lc,
+		lc_path,
+		raster(!!.x)
+	),
+
+	tar_file_read(
+		legend,
+		legend_path,
+		fread(!!.x)
+	),
+
 #	tar_file_read(
-#		lc,
-#		lc_path,
+#		nalcms_lc,
+#		nalcms_path,
 #		raster(!!.x)
 #	),
+
 #	tar_file_read(
-#		legend,
-#		legend_path,
+#		nalcms_legend,
+#		nalcms_legend_path,
 #		fread(!!.x)
 #	),
+
+	tar_file_read(
+		burn,
+		burn_path,
+		st_read(!!.x)
+		)
 #	tar_file_read(
 #		elev,
 #		elev_path,
@@ -140,9 +167,10 @@ targets_extract <- c(
 			crs,
 			lc,
 			legend,
-			elev,
-			popdens,
-			water
+			burn
+			#elev,
+			#popdens,
+			#water
 		)
 	),
 	tar_target(
