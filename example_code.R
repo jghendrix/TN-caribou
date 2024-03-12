@@ -281,3 +281,26 @@ ggsave(
 	height = 7,
 	dpi = 320
 )
+
+
+#### What landcover surface do we want? ----
+# SDSS landcover, restricted to TN area?
+
+sums <- tracks_random %>% summarise(
+	minx = min(x1_),
+	miny = min(y1_),
+	maxx = max(x1_),
+	maxy = max(y1_))
+
+bbox <- tracks_random %>% summarise(
+	minX = min(x2_, na.rm = T),
+	minY = min(y2_, na.rm = T),
+	maxX = max(x2_, na.rm = T),
+	maxY = max(y2_, na.rm = T))
+
+## All the 2_'s are further than the 1_'s, use those as the bounding box
+LLbbox <- tracks_random %>% summarise(
+minLat = min(Lat),
+maxLat = max(Lat),
+minLong = min(Longitude),
+maxLong = max(Longitude))
