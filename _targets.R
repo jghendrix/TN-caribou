@@ -4,7 +4,7 @@
 
 
 # Source ------------------------------------------------------------------
-lapply(dir('R', '*.R', full.names = TRUE), source)
+targets::tar_source('R')
 
 
 
