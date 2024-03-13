@@ -142,7 +142,8 @@ targets_prep <- c(
 targets_tracks <- c(
 	tar_target(
 		tracks,
-		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = epsg),
+		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
+			transform_coords(crs_to = crs),
 		pattern = map(locs_prep)
 	),
 	tar_target(
