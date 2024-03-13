@@ -10,7 +10,7 @@ extract_layers <- function(DT, crs, lc, legend) {
 	end <- c('x2_', 'y2_')
 
 	if (st_crs(lc) != crs) {
-		lc <- raster::projectRaster(lc, crs = crs$wkt)
+		lc <- raster::projectRaster(lc, crs = crs$wkt, method = 'ngb')
 	}
 
 	extract_pt(DT, lc, end)
