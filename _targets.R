@@ -43,8 +43,8 @@ water_path <- file.path('input', 'water.gpkg')
 # Targets: prepare
 id_col <- 'Animal_ID'
 datetime_col <- 'DATETIME'
-x_col <- 'X'
-y_col <- 'Y'
+x_col <- 'Longitude'
+y_col <- 'Lat'
 epsg <- 32621
 crs <- st_crs(epsg)
 crs_sp <- CRS(crs$wkt)
