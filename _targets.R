@@ -169,9 +169,6 @@ targets_extract <- c(
 			lc,
 			legend#,
 			#burn
-			#elev,
-			#popdens,
-			#water
 		)
 	),
 	tar_target(
