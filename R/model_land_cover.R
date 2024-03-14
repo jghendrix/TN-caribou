@@ -18,7 +18,7 @@ model_land_cover <- function(DT) {
 			,
 		data = DT,
 		family = poisson(),
-		map = list(theta = factor(c(NA, 1:43))),
-		start = list(theta = c(log(1000), seq(0, 0, length.out = 43)))
+		map = list(theta = factor(c(NA, 1:31))),
+		start = list(theta = c(log(1000), seq(0, 0, length.out = 31)))
 	)
 }

@@ -26,13 +26,8 @@ legend_path <- file.path('input', 'cfs_legend.csv')
 # nalcms_legend_path <- file.path('input', 'nalcms_legend.csv')
 
 # Path to burns
-burn_path <- file.path('input', 'Burn_Areas.gpkg')
+burn_path <- file.path('output', 'TN_burns.gpkg')
 
-# Path to elevation
-elev_path <- file.path('input', 'elev.tif')
-
-# Path to population density
-#popdens_path <- file.path('input', 'popdens.tif')
 
 # Path to water
 water_path <- file.path('input', 'water.gpkg')
@@ -109,11 +104,7 @@ targets_data <- c(
 		elev_path,
 		raster(!!.x)
 	),
-#	tar_file_read(
-#		popdens,
-#		popdens_path,
-#		raster(!!.x)
-#	),
+
 	tar_file_read(
 		water,
 		water_path,
@@ -168,8 +159,8 @@ targets_extract <- c(
 			tracks_random,
 			crs,
 			lc,
-			legend#,
-			#burn
+			legend,
+			burn
 		)
 	),
 	tar_target(
@@ -237,6 +228,15 @@ targets_effects <- c(
 	tar_target(
 		plot_boxplot,
 		plot_box_horiz(indiv_summary, plot_theme())
+	),
+
+	tar_target(
+		FO_summary,
+		indiv_estimates(model_forest)
+	),
+	tar_target(
+		plot_FO_boxplot,
+		plot_box_horiz(FO_summary, plot_theme())
 	)
 )
 

@@ -5,14 +5,15 @@ prepare_model <- function(DT) {
 	DT[, indiv_step_id := paste(Animal_ID, step_id_, sep = '_')]
 
 	# Grouping together landcover categories into more meaningful levels
-	# Herbs and Rock/Rubble are extremely rare (0.005%), group together w/ NAs in other?
+	# Herbs and Rock/Rubble are extremely rare (0.005%), group together w/ exposed
 
 	DT[lc_description %in% c('Coniferous', 'Mixedwood'), lc_adj := 'forest']
 	DT[lc_description %in% c('Shrubs'), lc_adj := 'scrub']
-	DT[lc_description %in% c('Exposed/Barren Land', 'Rock/Rubble'), lc_adj := 'open']
+	DT[lc_description %in% c('Exposed/Barren Land', 'Rock/Rubble', 'Herbs'), lc_adj := 'open']
 	DT[lc_description == 'Wetland', lc_adj := 'wetland']
 	DT[lc_description == 'Water', lc_adj := 'water']
-	DT[lc_description %in% c('Herbs', NA), lc_adj := 'other']
+	# any points outside of the lc raster, aka the long excursion to the southwest, let's try ignoring those for now
+	DT[!is.na(lc_description)]
 
 	DT[, forest := ifelse(lc_adj == 'forest', 1, 0)]
 	DT[, open := ifelse(lc_adj %in% c('open', 'wetland', 'scrub'), 1, 0)]

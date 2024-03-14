@@ -71,6 +71,7 @@ utmStreamsPol <- st_transform(streamsPol, utm)
 
 # Output ----
 st_write(utmTN, 'output/terra-nova-polygons.gpkg')
+st_write(utmBurn, 'output/TN_burns.gpkg')
 st_write(utmRoads, 'output/terra-nova-roads.gpkg')
 #st_write(utmWater, 'output/terra-nova-water.gpkg')
 st_write(utmStreamsLns, 'output/terra-nova-streams-lns.gpkg')
