@@ -41,6 +41,7 @@ datetime_col <- 'DATETIME'
 x_col <- 'Longitude'
 y_col <- 'Lat'
 epsg <- 32621
+# I think these points actually straddle 21N and 22N, the park is right on the boundary... so far this seems to be fine though?
 crs <- st_crs(epsg)
 crs_sp <- CRS(crs$wkt)
 tz <- 'America/St_Johns'
