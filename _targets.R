@@ -232,7 +232,7 @@ targets_model <- c(
 targets_effects <- c(
 	tar_target(
 		indiv_summary,
-		indiv_estimates(model_forest)
+		indiv_estimates(model_lc)
 	),
 	tar_target(
 		plot_boxplot,

@@ -304,3 +304,4 @@ minLat = min(Lat),
 maxLat = max(Lat),
 minLong = min(Longitude),
 maxLong = max(Longitude))
+
