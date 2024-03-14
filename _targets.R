@@ -4,7 +4,7 @@
 
 
 # Source ------------------------------------------------------------------
-lapply(dir('R', '*.R', full.names = TRUE), source)
+targets::tar_source('R')
 
 
 
@@ -43,8 +43,8 @@ water_path <- file.path('input', 'water.gpkg')
 # Targets: prepare
 id_col <- 'Animal_ID'
 datetime_col <- 'DATETIME'
-x_col <- 'X'
-y_col <- 'Y'
+x_col <- 'Longitude'
+y_col <- 'Lat'
 epsg <- 32621
 crs <- st_crs(epsg)
 crs_sp <- CRS(crs$wkt)
@@ -142,7 +142,8 @@ targets_prep <- c(
 targets_tracks <- c(
 	tar_target(
 		tracks,
-		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = epsg),
+		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
+			transform_coords(crs_to = crs),
 		pattern = map(locs_prep)
 	),
 	tar_target(
