@@ -1,7 +1,7 @@
 #' @title Extract layers
 #' @export
 #' @author Alec L. Robitaille, Julie W. Turner
-extract_layers <- function(DT, crs, lc, legend) {
+extract_layers <- function(DT, crs, lc, legend, burn) {
 	# Eventually also want to have 'burn' in the function call, so we can calculate distance to burns/whether points are inside burn polygons, but leaving that alone for the time being and just trying to extract landcover
 
 	setDT(DT)
