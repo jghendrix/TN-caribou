@@ -102,7 +102,7 @@ targets_data <- c(
 		burn,
 		burn_path,
 		st_read(!!.x)
-		),
+	),
 
 	tar_file_read(
 		elev,
@@ -133,6 +133,10 @@ targets_prep <- c(
 	tar_target(
 		split_key,
 		unique(locs_prep[, .SD, .SDcols = c(split_by, 'tar_group')])
+	),
+	tar_target(
+		burn_prep,
+		prepare_burn(burn, crs, drop_z = TRUE)
 	)
 )
 
@@ -168,8 +172,8 @@ targets_extract <- c(
 			tracks_random,
 			crs,
 			lc,
-			legend#,
-			#burn
+			legend,
+			burn_prep
 		)
 	),
 	tar_target(
