@@ -4,7 +4,7 @@ extract_distance_to <- function(DT, layer, coords, crs) {
 	object_name <- deparse(substitute(layer))
 
 	dists <- distance_to(
-		st_as_sf(DT[, .SD, .SDcols = c(coords)], coords = coords, crs = crs),
+		st_as_sf(DT, coords = coords, crs = crs),
 		layer
 	)
 
