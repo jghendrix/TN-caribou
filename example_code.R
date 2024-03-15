@@ -1,15 +1,5 @@
 ### Install Packages ----
-## An R package to hold and facilitate interaction with Natural Earth map data.
-install.packages("rnaturalearth")
 
-## Data to support much of the package functionality are stored in two additional data packages
-devtools::install_github("ropensci/rnaturalearthdata")
-devtools::install_github("ropensci/rnaturalearthhires")
-
-## Additional data (coastlines, roads, etc) can be found here:
-# http://www.naturalearthdata.com/downloads/50m-physical-vectors/
-
-### Packages ----
 library(data.table)
 library(dplyr)
 library(magrittr)
@@ -18,11 +8,7 @@ library(cowplot)
 library(viridis)
 library(ggspatial)
 library(sf)
-#library(rgdal)
 library(raster)
-library(rnaturalearth)
-library(rnaturalearthhires)
-library(rnaturalearthdata)
 
 
 
@@ -304,4 +290,3 @@ minLat = min(Lat),
 maxLat = max(Lat),
 minLong = min(Longitude),
 maxLong = max(Longitude))
-
