@@ -7,8 +7,8 @@ predict_h1_forest <- function(DT, model) {
 	new_data <- DT[, .(
 		sl_ = mean(sl_),
 		forest = seq(from = 0, to = 1, length.out = N),
-		disturbed = 0,
-		dist_to_water= median(dist_to_water, na.rm = TRUE),
+		open = 0,
+		dist_to_burn = median(dist_to_burn, na.rm = TRUE),
 		indiv_step_id = NA
 	), by = id]
 

@@ -214,18 +214,18 @@ targets_model <- c(
 		model_prep,
 		prepare_model(tracks_extract)
 	),
-	tar_target(
-		model_lc,
-		model_land_cover(model_prep)
-	),
+#	tar_target(
+#		model_lc,
+#		model_land_cover(model_prep)
+#	),
 	tar_target(
 		model_forest,
 		model_forest_bin(model_prep)
 	),
-	tar_target(
-		model_check_lc,
-		model_check(model_lc)
-	),
+#	tar_target(
+#		model_check_lc,
+#		model_check(model_lc)
+#	),
 	tar_target(
 		model_check_forest,
 		model_check(model_forest)
@@ -279,8 +279,8 @@ targets_speed <- c(
 # Targets: RSS ------------------------------------------------------------
 targets_rss <- c(
 	tar_target(
-		pred_h1_water,
-		predict_h1_water(model_prep, model_forest)
+		pred_h1_burn,
+		predict_h1_burn(model_prep, model_forest)
 	),
 	tar_target(
 		pred_h1_forest,
@@ -295,8 +295,8 @@ targets_rss <- c(
 		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
 	),
 	tar_target(
-		rss_water,
-		calc_rss(pred_h1_water, 'h1_water', pred_h2, 'h2')
+		rss_burn,
+		calc_rss(pred_h1_burn, 'h1_burn', pred_h2, 'h2')
 	),
 	tar_target(
 		plot_rss_forest,
@@ -305,10 +305,10 @@ targets_rss <- c(
 					 title = 'RSS compared to 0 forest')
 	),
 	tar_target(
-		plot_rss_water,
-		plot_rss(rss_water, plot_theme()) +
-			labs(x = 'Water', y = 'logRSS',
-					 title = 'RSS compared to mean distance from water')
+		plot_rss_burn,
+		plot_rss(rss_burn, plot_theme()) +
+			labs(x = 'burn', y = 'logRSS',
+					 title = 'RSS compared to mean distance from burn')
 	)
 )
 
