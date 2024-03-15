@@ -23,5 +23,6 @@ extract_layers <- function(DT, crs, lc, legend, burn) {
 
 	# Error message: number of columns of matrices must match
 	# tried shrinking the burns down to just two columns, like the fisher water example... didn't really think that would help, and indeed it did not
-	# maybe the multipolygons for each fire is complicating things? but that's what the water data look like too? I assume this worked with the original data so my troubleshooting just consists of trying to get the burns data to look the same as the water
+	# maybe the multipolygons for each fire is complicating things? The water has polygons > double for each feature, but the fires are multipolygons > polygons > double? I assume this worked with the original data so my troubleshooting just consists of trying to get the burns data to look the same as the water
+	# potential very janky solution: split up the burns so that each polygon of the burn is a separate row in the overall sf, with identical values for all the other columns?
 }

@@ -99,12 +99,8 @@ targets_data <- c(
 		burn_path,
 		st_read(!!.x)
 		),
-
-	tar_file_read(
-		elev,
-		elev_path,
-		raster(!!.x)
-	),
+# Worth splitting burns into > 30y old and < 30y old? There's a break from 1986 to 1996, so using 1992 as a cutoff from 2020-2022 seems reasonable to characterize the change in regeneration at that point
+# can we calculate distance_to for certain parts of an sf? Or do we want to split the sf into two separate files by burn year, and then calculate distance to old fires and distance to new fires separately?
 
 	tar_file_read(
 		water,
