@@ -9,10 +9,12 @@ prepare_model <- function(DT) {
 
 	DT[lc_description %in% c('Coniferous', 'Mixedwood'), lc_adj := 'forest']
 	DT[lc_description %in% c('Shrubs'), lc_adj := 'scrub']
-	DT[lc_description %in% c('Exposed/Barren Land', 'Rock/Rubble'), lc_adj := 'open']
+	DT[lc_description %in% c('Exposed/Barren Land', 'Rock/Rubble', 'Herbs'), lc_adj := 'open']
 	DT[lc_description == 'Wetland', lc_adj := 'wetland']
 	DT[lc_description == 'Water', lc_adj := 'water']
-	DT[lc_description %in% c('Herbs', NA), lc_adj := 'other']
+
+	DT <- DT[!is.na(pt_lc)]
+	# some points are outside the raster, generally one animal that ventured dozens of km southeast, ignore these for now
 
 	DT[, forest := ifelse(lc_adj == 'forest', 1, 0)]
 	DT[, open := ifelse(lc_adj %in% c('open', 'wetland', 'scrub'), 1, 0)]
