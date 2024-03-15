@@ -1,4 +1,9 @@
 prepare_burn <- function(burn, crs, drop_z = TRUE) {
+
+	burn %<>% mutate(YEAR = ifelse(Burn_ID == 7, 1999, YEAR),
+									 YEAR = ifelse(Burn_ID == 8, 1977, YEAR))
+	# a couple fires were missing dates, swap these in courtesy of John
+
 	burn_reproj <- st_transform(burn, crs)
 
 	if (drop_z) {

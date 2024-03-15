@@ -5,7 +5,7 @@ plot_dist <- function(DT, theme) {
 
 	ggplot(data = DT,
 				 aes(x, spd)) +
-		geom_point(size = 0.1) +
+		geom_point() +
 		scale_color_colorblind()  +
 		scale_fill_colorblind() +
 		plot_theme()

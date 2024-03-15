@@ -6,7 +6,7 @@ predict_h2 <- function(DT, model) {
 		sl_ = mean(sl_),
 		forest = 0,
 		open = 0,
-		dist_to_burn = median(dist_to_burn, na.rm = TRUE),
+		dist_to_new_burn = median(dist_to_new_burn, na.rm = TRUE),
 		indiv_step_id = NA
 	), by = id]
 

@@ -6,7 +6,7 @@ calc_speed <- function(DT, covariate, seq) {
 	DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																			`I(log(sl_)):forest`*seq +
 																			`I(log(sl_)):open` +
-																			`I(log(dist_to_burn + 1)):I(log(sl_))`*median.burn
+																			`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
 															)*(scale))),
 									 x = list(list(seq))),
 					 by=.(id)]
@@ -14,15 +14,15 @@ calc_speed <- function(DT, covariate, seq) {
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`*seq +
-																	`I(log(dist_to_burn + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]
-	if(covariate == "dist_to_burn")
+	if(covariate == "dist_to_new_burn")
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`+
-																	`I(log(dist_to_burn + 1)):I(log(sl_))`*seq
+																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*seq
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]

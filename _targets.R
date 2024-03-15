@@ -110,6 +110,15 @@ targets_prep <- c(
 	tar_target(
 		burn_prep,
 		prepare_burn(burn, crs, drop_z = TRUE)
+	),
+
+	tar_target(
+		old_burn,
+		split_burn(burn_prep, "old")
+	),
+	tar_target(
+		new_burn,
+		split_burn(burn_prep, "new")
 	)
 )
 
@@ -146,7 +155,8 @@ targets_extract <- c(
 			crs,
 			lc,
 			legend,
-			burn_prep
+			old_burn,
+			new_burn
 		)
 	),
 	tar_target(
@@ -239,12 +249,12 @@ targets_speed <- c(
 
 	tar_target(
 		calc_speed_burn,
-		calc_speed(prep_speed, 'dist_to_burn', seq(1, 17000, by = 10))
+		calc_speed(prep_speed, 'dist_to_new_burn', seq(1, 27000, length.out = 100L))
 	),
 	tar_target(
 		plot_speed_burn,
 		plot_dist(calc_speed_burn, plot_theme()) +
-			labs(x = 'Distance to burn (m)', y = 'Speed (m/2hr)')
+			labs(x = 'Distance to new burn (m)', y = 'Speed (m/2hr)')
 	)
 
 )
@@ -280,8 +290,8 @@ targets_rss <- c(
 	tar_target(
 		plot_rss_burn,
 		plot_rss(rss_burn, plot_theme()) +
-			labs(x = 'burn', y = 'logRSS',
-					 title = 'RSS compared to mean distance from burn')
+			labs(x = 'Distance to new burn (m)', y = 'logRSS',
+					 title = 'RSS compared to mean distance from new burn')
 	)
 )
 
