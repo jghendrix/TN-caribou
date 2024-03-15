@@ -236,7 +236,7 @@ targets_model <- c(
 targets_effects <- c(
 	tar_target(
 		indiv_summary,
-		indiv_estimates(model_lc)
+		indiv_estimates(model_forest)
 	),
 	tar_target(
 		plot_boxplot,
@@ -255,14 +255,25 @@ targets_speed <- c(
 		)
 	),
 	tar_target(
-		calc_speed_disturbed,
-		calc_speed(prep_speed, 'disturbed', seq = 0:1)
+		calc_speed_open,
+		calc_speed(prep_speed, 'open', seq = 0:1)
 	),
 	tar_target(
-		plot_speed_disturbed,
-		plot_box(calc_speed_disturbed, plot_theme()) +
-			labs(x = 'Not disturbed vs disturbed', y = 'Speed (m/30mins)')
+		plot_speed_open,
+		plot_box(calc_speed_open, plot_theme()) +
+			labs(x = 'Closed vs open', y = 'Speed (m/2hr)')
+	),
+
+	tar_target(
+		calc_speed_burn,
+		calc_speed(prep_speed, 'dist_to_burn', seq(1, 17000, by = 10))
+	),
+	tar_target(
+		plot_speed_burn,
+		plot_dist(calc_speed_burn, plot_theme()) +
+			labs(x = 'Distance to burn (m)', y = 'Speed (m/2hr)')
 	)
+
 )
 
 # Targets: RSS ------------------------------------------------------------

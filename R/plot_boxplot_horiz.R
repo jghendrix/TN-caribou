@@ -13,7 +13,7 @@ gbox <- 	ggplot(data = DT[term !='(Intercept)' & term != 'lc_adjother'],
 		plot_theme()
 
 ggsave(
-	'graphics/indiv_selection_14March.png',
+	'graphics/indiv_selection.png',
 	gbox,
 	width = 10,
 	height = 10,
