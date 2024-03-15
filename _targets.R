@@ -28,17 +28,6 @@ legend_path <- file.path('input', 'cfs_legend.csv')
 # Path to burns
 burn_path <- file.path('input', 'Burn_Areas.gpkg')
 
-# Path to elevation
-elev_path <- file.path('input', 'elev.tif')
-
-# Path to population density
-#popdens_path <- file.path('input', 'popdens.tif')
-
-# Path to water
-water_path <- file.path('input', 'water.gpkg')
-
-
-
 # Variables ---------------------------------------------------------------
 # Targets: prepare
 id_col <- 'Animal_ID'
@@ -101,22 +90,6 @@ targets_data <- c(
 	tar_file_read(
 		burn,
 		burn_path,
-		st_read(!!.x)
-	),
-
-	tar_file_read(
-		elev,
-		elev_path,
-		raster(!!.x)
-	),
-#	tar_file_read(
-#		popdens,
-#		popdens_path,
-#		raster(!!.x)
-#	),
-	tar_file_read(
-		water,
-		water_path,
 		st_read(!!.x)
 	)
 )
