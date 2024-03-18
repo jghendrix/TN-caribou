@@ -166,7 +166,12 @@ targets_extract <- c(
 
 	tar_target(
 		burn_points,
-		extract_burn_points(burn_prep)
+		generate_burn_pts(burn_prep)
+	),
+
+	tar_target(
+		extract_burn,
+		extract_burn_lc(burn_points, crs, lc, legend)
 	)
 )
 
@@ -217,7 +222,11 @@ targets_model <- c(
 	tar_target(
 		model_check_forest,
 		model_check(model_forest)
-	)
+	),
+
+	tar_target(
+		current_burn_lc,
+		burn_lc_status(extract_burn))
 )
 
 # Targets: output and effects ------------------------------------------------------------

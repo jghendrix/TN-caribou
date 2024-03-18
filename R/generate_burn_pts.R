@@ -1,6 +1,6 @@
-## Extracting random points from each burn polygon
+## Generate random points within each burn polygon
 
-extract_burn_pts <- function(burn_prep) {
+generate_burn_pts <- function(burn_prep) {
 
 	burn_prep %<>% mutate(n = Hectares1*10, #approximates one point per 30x30m pixel?
 												n = round(n, digits = 0),
@@ -13,7 +13,7 @@ extract_burn_pts <- function(burn_prep) {
 	burn_test <- burn_prep %>% mutate(id = ifelse(Loc_toPark == "Outside" &
 																	 	Burn_ID %in% c(2, 4, 5, 11, 14, 15),
 																	 	NA, Burn_ID))
-	NAs <- burn_test %>% filter(is.na(id)) %>% mutate(id = seq(22, 27))
+	NAs <- burn_test %>% dplyr::filter(is.na(id)) %>% mutate(id = seq(22, 27))
 	burn_prep <- rbind(subset(burn_test, !is.na(id)), NAs)
 	# this is such a laborious and ineffective way of getting there, but it worked lol
 
@@ -34,6 +34,12 @@ extract_burn_pts <- function(burn_prep) {
 		all_pts <- rbind(all_pts, pts)
 
 	}
+
+	# bring the year and location info back to attach to Burn_id
+
+	info <- burn_prep %>% dplyr::select(c(id, year = YEAR, Loc = Loc_toPark)) %>%
+		dplyr::select(-c(geom))
+	all_pts <- left_join(all_pts, info, by = c("id"))
 
 	return(all_pts)
 }
