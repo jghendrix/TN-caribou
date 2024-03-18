@@ -290,3 +290,139 @@ minLat = min(Lat),
 maxLat = max(Lat),
 minLong = min(Longitude),
 maxLong = max(Longitude))
+
+## Exploring distribution of fixes and steps through time ----
+
+tar_load(locs_raw)
+# 1.05 million GPS locs
+tar_load(tracks_extract)
+steps <- tracks_extract %>% dplyr::filter(case_ == "TRUE")
+# 12.6 k steps ...
+length(steps$x1_) / length(locs_raw$X)
+# 1.2% ratio ... where are all the data going??
+
+summary(locs_raw)
+missing <- locs_raw %>% dplyr::filter(is.na(X))
+# 1 008 528 rows are just blank, with no data??
+# Animal_ID isn't NA, b/c there's a space there, but it's not real data
+real <- locs_raw %>% dplyr::filter(!is.na(X))
+
+# 40 047 actual fixes across the dataset
+
+locs_raw$date <- lubridate::as_datetime(locs_raw$DATETIME)
+ggplot(real, aes(x = Animal_ID, y = date)) +
+	geom_point(alpha = 0.3, colour = "grey") +
+	geom_point(data = steps, aes(x = Animal_ID, y = t1_), alpha = 0.3) +
+	coord_flip()
+
+# hard to see with so many points... summarise to day?
+
+steps %<>% mutate(day = date(t1_), type = "step") %>% group_by(Animal_ID, ANIMAL_SN, day, type) %>% summarise(n = n())
+
+real %<>% mutate(day = date(date), type = "fix") %>% group_by(Animal_ID, ANIMAL_SN, day, type) %>% summarise(n = n())
+
+dates <- rbind(real, steps)
+
+ggplot(dates, aes(x = Animal_ID, y = day, colour = type)) +
+	geom_point(alpha = 0.4, position = position_dodge(width = -0.4)) +
+	scale_colour_viridis(discrete = TRUE, begin = 0.2, end = 0.85) +
+	coord_flip()
+
+# seasonal coverage?
+id1 <- dates %>% filter(Animal_ID == "tn85849", year(day) == 2021)
+seasons <- id1 %>% group_by(ANIMAL_SN) %>% summarise(min = min(day),
+																					max = max(day))
+# W winter 14 Dec - 31 March
+# SM spring migration 1 April - 19 May
+# C calving 20 May - 10 June
+# PC post calving 11 June - 30 June
+# PCR post calving... range(?) 1 July - 31 August
+# FR fall... range(?) 1 Sept - 31 Oct
+# FM fall migration 1 Nov - 13 Dec
+
+seasons %<>% mutate(days = max - min) %>%
+	select(-c(ANIMAL_SN))
+
+seasons$season <- factor(seasons$season, levels = c("W", "SM", "C", "PC", "PCR", "FR", "FM"))
+
+# Now to get the steps per season for each indiv
+library(stringr)
+seasons %<>% mutate(season = str_extract(ANIMAL_SN, "(?<=_).*"),
+										season = str_extract(season, "(?<=_).*"))
+# there are two underscores, so we have to do this twice...
+# can't call for the last two characters or whatever b/c the seasons are different lengths
+# regardless, this worked
+
+steps %<>% mutate(season = str_extract(ANIMAL_SN, "(?<=_).*"),
+									season = str_extract(season, "(?<=_).*"))
+
+steps <- tracks_extract %>% filter(case_ == "TRUE") %>%
+							mutate(season = str_extract(ANIMAL_SN, "(?<=_).*"),
+										season = str_extract(season, "(?<=_).*"))
+steps$season <- factor(steps$season, levels = c("W", "SM", "C", "PC", "PCR", "FR", "FM"))
+
+d <- steps %>%
+	mutate(year = year(t1_), doy = yday(t1_)) %>%
+	mutate(year = ifelse(season == "W" & doy > 335, year + 1, year)) %>%
+	group_by(Animal_ID, season, year) %>%
+	summarise(n = n()) %>%
+	pivot_wider(names_from = season, values_from = n)
+
+write.csv(d, 'output/steps_by_season.csv')
+
+
+# where is the long range travel by that one animal, tn85845
+NAs <- steps %>% filter(!is.na(pt_lc), Animal_ID == "tn85845") %>%
+	mutate(year = year(t1_), doy = yday(t1_)) %>%
+	filter(year == 2022)
+
+# between 13 Jan and 8 April, she was off on an adventure away from the park
+# mostly winter 2022, then
+# she has 261 steps in winter 2022, this isn't going to be the same as in practice
+# removing NAs, it's only 57 steps
+
+noNA <- steps %>% filter(!is.na(pt_lc)) %>%
+	mutate(year = year(t1_), doy = yday(t1_)) %>%
+	mutate(year = ifelse(season == "W" & doy > 335, year + 1, year)) %>%
+	group_by(Animal_ID, season, year) %>%
+	summarise(n = n()) %>%
+	pivot_wider(names_from = season, values_from = n)
+write.csv(noNA, 'output/steps_by_season_with_lc.csv')
+
+# Any conclusions here on whether these are enough steps per season to do anything time-of-year specific?? TBD ----
+
+
+
+# Assessing extant landcover w/i burn polygons ----
+
+# want to randomly generate a number of points within each fire
+# fires vary in size, so sampling 100 points/fire wouldn't even be close to proportional
+
+ggplot(burn_prep, aes(x = Burn_ID, y = Hectares1)) +
+	geom_point() +
+	ylim(c(0, 5))
+
+# 3 big fires > 200ha, the majority are less than that though
+# 10 smallest fires are less than 20 ha
+# 4 smallest are 1ha or less
+burn_prep %<>% mutate(area = 10000*Hectares1)
+
+# I was going to say 1 point per ha for each fire, but that leaves us with only one point for the smaller ones... 10 points minimum? And for fires > 10ha, 1 point per ha?
+
+# smallest fire, Rocky Pond 2002, is 1m2... unlikely to even show up in CFS landcover tbh
+# the next biggest are 500 and 800m2, still less than a 30x30m pixel
+# one point per 1000m2, 10points/ha? Up to a maximum of 100 points maybe?
+
+# how do you even randomly generate points inside a polygon?
+
+polygon <- subset(burn_prep, Burn_ID == 15)
+points = sf::st_sample(polygon, size=10)
+# Plot using the ggplot geom_sf function
+ggplot() +
+	geom_sf(aes(), data=polygon) +
+	geom_sf(aes(), data=points)
+
+pts <- points %>% sf::st_coordinates() %>% as.data.frame()
+
+
+

@@ -162,6 +162,11 @@ targets_extract <- c(
 	tar_target(
 		avail_lc,
 		calc_availability(tracks_extract, 'lc_description', 'proportion', split_by)
+	),
+
+	tar_target(
+		burn_points,
+		extract_burn_points(burn_prep)
 	)
 )
 
@@ -291,7 +296,7 @@ targets_rss <- c(
 		plot_rss_burn,
 		plot_rss(rss_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'logRSS',
-					 title = 'RSS compared to mean distance from new burn')
+					 title = 'RSS compared to mean distance from burn')
 	)
 )
 
