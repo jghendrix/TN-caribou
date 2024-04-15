@@ -110,18 +110,17 @@ targets_prep <- c(
 	tar_target(
 		burn_prep,
 		prepare_burn(burn, crs, drop_z = TRUE)
-	)#,
+	),
 
-	#tar_target(
-#		old_burn,
-#		split_burn(burn_prep, "old")
-#	),
-#	tar_target(
-#		new_burn,
-#		split_burn(burn_prep, "new")
-#	)
+	tar_target(
+		old_burn,
+		split_burn(burn_prep, "old")
+	),
+	tar_target(
+		new_burn,
+		split_burn(burn_prep, "new")
+	)
 )
-
 
 
 # Targets: tracks ---------------------------------------------------------
@@ -158,9 +157,20 @@ targets_extract <- c(
 			burn_prep
 		)
 	),
+
+	tar_target(
+		tracks_burn_by_age,
+		burn_by_age(
+			tracks_extract,
+			crs,
+			old_burn,
+			new_burn
+			)
+	),
+
 	tar_target(
 		avail_lc,
-		calc_availability(tracks_extract, 'lc_description', 'proportion', split_by)
+		calc_availability(tracks_burn_by_age, 'lc_description', 'proportion', split_by)
 	)#,
 
 #	tar_target(
