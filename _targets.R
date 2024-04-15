@@ -110,16 +110,16 @@ targets_prep <- c(
 	tar_target(
 		burn_prep,
 		prepare_burn(burn, crs, drop_z = TRUE)
-	),
+	)#,
 
-	tar_target(
-		old_burn,
-		split_burn(burn_prep, "old")
-	),
-	tar_target(
-		new_burn,
-		split_burn(burn_prep, "new")
-	)
+	#tar_target(
+#		old_burn,
+#		split_burn(burn_prep, "old")
+#	),
+#	tar_target(
+#		new_burn,
+#		split_burn(burn_prep, "new")
+#	)
 )
 
 
@@ -155,24 +155,23 @@ targets_extract <- c(
 			crs,
 			lc,
 			legend,
-			old_burn,
-			new_burn
+			burn_prep
 		)
 	),
 	tar_target(
 		avail_lc,
 		calc_availability(tracks_extract, 'lc_description', 'proportion', split_by)
-	),
+	)#,
 
-	tar_target(
-		burn_points,
-		generate_burn_pts(burn_prep)
-	),
+#	tar_target(
+#		burn_points,
+#		generate_burn_pts(burn_prep)
+#	),
 
-	tar_target(
-		extract_burn,
-		extract_burn_lc(burn_points, crs, lc, legend)
-	)
+#	tar_target(
+#		extract_burn,
+#		extract_burn_lc(burn_points, crs, lc, legend)
+#	)
 )
 
 

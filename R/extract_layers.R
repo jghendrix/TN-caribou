@@ -1,7 +1,7 @@
 #' @title Extract layers
 #' @export
 #' @author Alec L. Robitaille, Julie W. Turner
-extract_layers <- function(DT, crs, lc, legend, old_burn, new_burn) {
+extract_layers <- function(DT, crs, lc, legend, burn_prep) {
 
 	setDT(DT)
 
@@ -17,10 +17,10 @@ extract_layers <- function(DT, crs, lc, legend, old_burn, new_burn) {
 
 
 	extract_distance_to(DT[!is.na(x2_) & !is.na(y2_)],
-											old_burn, end, crs)
+											burn_prep, end, crs)
 
-	extract_distance_to(DT[!is.na(x2_) & !is.na(y2_)],
-											new_burn, end, crs)
+#	extract_distance_to(DT[!is.na(x2_) & !is.na(y2_)],
+#											new_burn, end, crs)
 
 	# It will only give me one of the two distances, whichever is listed second. Overwriting itself, I imagine? For the time being let's just focus on newer burns to which they are more likely to respond
 }

@@ -391,6 +391,13 @@ write.csv(noNA, 'output/steps_by_season_with_lc.csv')
 
 # Any conclusions here on whether these are enough steps per season to do anything time-of-year specific?? TBD ----
 
+# How much are they even using the burns? ----
+# looking just since 1990
+new_burns %<>% filter(case_ == "TRUE") %>% mutate(in_fire = ifelse(dist_to_new_burn == 0, 1, 0))
+new_sum <- new_burns %>% group_by(Animal_ID, in_fire) %>% summarise(n = n()) %>% ungroup() %>% group_by(Animal_ID) %>% mutate(prop = n/sum(n))
+
+tracks_extract %<>% filter(case_ == "TRUE") %>% mutate(in_fire = ifelse(dist_to_burn_prep == 0, 1, 0))
+all_sum <- tracks_extract %>% group_by(Animal_ID, in_fire) %>% summarise(n = n()) %>% ungroup() %>% group_by(Animal_ID) %>% mutate(prop = n/sum(n))
 
 
 # Assessing extant landcover w/i burn polygons ----
@@ -423,6 +430,8 @@ ggplot() +
 	geom_sf(aes(), data=points)
 
 pts <- points %>% sf::st_coordinates() %>% as.data.frame()
+
+
 
 
 

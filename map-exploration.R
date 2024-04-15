@@ -11,11 +11,6 @@ library(cowplot)
 library(viridis)
 library(ggspatial)
 
-## What do the burn areas look like?
-burns <- read_sf("input/Burn_Areas.shp")
-
-# Need a base map to plot these on
-
 # === Terra Nova - Prep ---------------------------------------------------
 # Alec L. Robitaille, Isabella Richmond
 
@@ -29,7 +24,7 @@ tn <- parks[parks$CLAB_ID == 'NOVA', ]
 
 ## Roads
 # Need latlong
-bb <- st_bbox(st_transform(st_buffer(tn, 5e4), 4326))
+bb <- st_bbox(st_transform(st_buffer(tn, 9e4), 4326))
 routes <- opq(bb) %>%
 	add_osm_feature(key = 'highway') %>%
 	osmdata_sf()
@@ -143,6 +138,8 @@ tnburns <- st_read('output/terra-nova-burns.gpkg')
 # need to remove the z-coord from the burns, apparently? Not sure why that works but it solves the problem
 tnburns <- st_zm(tnburns)
 
+# Ochre Hill fire #1 = 1999,  TN Access Road Fire = 1977
+
 # Fire map
 (gburn <- ggplot() +
  	geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
@@ -254,3 +251,103 @@ ggsave(
 	height = 10,
 	dpi = 320
 )
+
+
+## Expanding outwards to show all caribou data and our landcover bounding box? ----
+
+# redefine BB to include further southwest
+# Need latlong
+bb <- st_bbox(st_transform(st_buffer(tn, 9e4), 4326))
+routes <- opq(bb) %>%
+	add_osm_feature(key = 'highway') %>%
+	osmdata_sf()
+
+# Grab roads
+roads <- routes$osm_lines
+
+# Water (internal)
+water <- opq(bb) %>%
+	add_osm_feature(key = 'natural', value = 'water') %>%
+	osmdata_sf()
+
+# Grab polygons
+mpols <- water$osm_multipolygons
+
+# Union and combine
+waterpols <- st_union(st_combine(mpols))
+## TODO: "Error in wk_handle.wk_wkb(wkb, s2_geography_writer(oriented = oriented,  : Loop 4111 edge 1463 has duplicate near loop 5211 edge 1361"
+# water bodies/polygons are giving an error, but streams are fine... let's just move on for now
+
+# Streams
+waterways <- opq(bb) %>%
+	add_osm_feature(key = 'waterway') %>%
+	osmdata_sf()
+
+streamsPol <- st_cast(st_polygonize(st_union(waterways$osm_lines)))
+streamsLns <- waterways$osm_lines
+
+
+# Reprojection ----
+utm <- st_crs('+proj=utm +zone=21 ellps=WGS84')
+
+# Project to UTM
+utmTN <- st_transform(tn, utm)
+utmRoads <- st_transform(roads, utm)
+#utmWater <- st_transform(waterpols, utm)
+utmStreamsLns <- st_transform(streamsLns, utm)
+utmStreamsPol <- st_transform(streamsPol, utm)
+
+# Output ----
+st_write(utmTN, 'output/terra-nova-polygons.gpkg')
+st_write(utmRoads, 'output/terra-nova-roads.gpkg')
+#st_write(utmWater, 'output/terra-nova-water.gpkg')
+st_write(utmStreamsLns, 'output/terra-nova-streams-lns.gpkg')
+st_write(utmStreamsPol, 'output/terra-nova-streams-pols.gpkg')
+
+# Data ----
+tn <- st_read('output/terra-nova-polygons.gpkg')
+roads <- st_read('output/terra-nova-roads.gpkg')
+nl <- st_read('output/newfoundland-polygons.gpkg')
+#water <- st_read('output/terra-nova-water.gpkg')
+streamLns <- st_read('output/terra-nova-streams-lns.gpkg')
+streamPols <- st_read('output/terra-nova-streams-pols.gpkg')
+
+# Only main highway and primary
+selroads <- c('trunk', 'primary')
+highway <- roads[roads$highway %in% selroads,]
+
+# Map theme ----
+
+roadcols <- data.table(highway = selroads)
+roadcols[, cols := gray.colors(.N, start = 0.1, end = 0.4)]
+roadpal <- roadcols[, setNames(cols, highway)]
+
+# Theme
+themeMap <- theme(panel.border = element_rect(size = 1, fill = NA),
+									panel.background = element_rect(fill = "lightblue"),
+									panel.grid = element_line(color = "grey", size = 0.2),
+									axis.text = element_text(size = 11, color = 'black'),
+									axis.title = element_blank())
+
+# x/y limits
+bb <- st_bbox(tn) - rep(c(1e3, -1e3), each = 2)
+
+
+# Plot ----
+# Crop NL
+nlcrop <- st_crop(nl, bb + rep(c(-5e4, 5e4), each = 2))
+
+# Base terra-nova
+(gtn <- ggplot() +
+		geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
+		geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
+		#geom_sf(fill = "lightblue", size = 0.2, color = "darkblue", data = water) +
+		geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
+		geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+		geom_sf(aes(color = highway), data = highway) +
+		#geom_sf_label(aes(label = 'Terra Nova National Park'), size = 5, fontface = 'bold', data = tn, nudge_x = 100, nudge_y = 100) +
+		scale_color_manual(values = roadpal) +
+		coord_sf(xlim = c(bb['xmin'], bb['xmax']),
+						 ylim = c(bb['ymin'], bb['ymax'])) +
+		guides("none") +
+		themeMap)
