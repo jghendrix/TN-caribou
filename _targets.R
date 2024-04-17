@@ -330,13 +330,20 @@ targets_rss <- c(
 		plot_rss_new_burn,
 		plot_rss(rss_new_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'logRSS',
-					 title = 'RSS compared to mean distance from post-1992 burn')
+				 title = 'RSS compared to median distance from post-1992 burns')
 	),
 	tar_target(
 		plot_rss_old_burn,
 		plot_rss(rss_old_burn, plot_theme()) +
 			labs(x = 'Distance to old burn (m)', y = 'logRSS',
-					 title = 'RSS compared to mean distance from pre-1992 burn')
+				 title = 'RSS compared to median distance from pre-1992 burns')
+	),
+
+	tar_target(
+		rss_plots,
+		save_rss_plot(plot_rss_forest,
+									plot_rss_old_burn,
+									plot_rss_new_burn)
 	)
 )
 
