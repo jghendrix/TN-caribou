@@ -14,7 +14,7 @@ tar_option_set(format = 'qs')
 
 
 # Data --------------------------------------------------------------------
-# Path to fisher locs data
+# Path to caribou locs data
 locs_path <- file.path('input', 'TNNP_ALL_Caribou.csv')
 
 # Path to land covers
