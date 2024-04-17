@@ -9,6 +9,7 @@ predict_h1_forest <- function(DT, model) {
 		forest = seq(from = 0, to = 1, length.out = N),
 		open = 0,
 		dist_to_new_burn = median(dist_to_new_burn, na.rm = TRUE),
+		dist_to_old_burn = median(dist_to_old_burn, na.rm = TRUE),
 		indiv_step_id = NA
 	), by = id]
 

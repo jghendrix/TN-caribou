@@ -159,18 +159,26 @@ targets_extract <- c(
 	),
 
 	tar_target(
-		tracks_burn_by_age,
-		burn_by_age(
+		tracks_w_old,
+		old_burn_dist(
 			tracks_extract,
 			crs,
-			old_burn,
-			new_burn
+			old_burn
 			)
 	),
 
 	tar_target(
+		tracks_w_both,
+		new_burn_dist(
+			tracks_w_old,
+			crs,
+			new_burn
+		)
+	),
+
+	tar_target(
 		avail_lc,
-		calc_availability(tracks_burn_by_age, 'lc_description', 'proportion', split_by)
+		calc_availability(tracks_w_both, 'lc_description', 'proportion', split_by)
 	)#,
 
 #	tar_target(
@@ -214,7 +222,7 @@ targets_distributions <- c(
 targets_model <- c(
 	tar_target(
 		model_prep,
-		prepare_model(tracks_extract)
+		prepare_model(tracks_w_both)
 	),
 #	tar_target(
 #		model_lc,
@@ -231,11 +239,11 @@ targets_model <- c(
 	tar_target(
 		model_check_forest,
 		model_check(model_forest)
-	),
+	)#,
 
-	tar_target(
-		current_burn_lc,
-		burn_lc_status(extract_burn))
+#	tar_target(
+#		current_burn_lc,
+#		burn_lc_status(extract_burn))
 )
 
 # Targets: output and effects ------------------------------------------------------------
@@ -285,8 +293,12 @@ targets_speed <- c(
 # Targets: RSS ------------------------------------------------------------
 targets_rss <- c(
 	tar_target(
-		pred_h1_burn,
-		predict_h1_burn(model_prep, model_forest)
+		pred_h1_new_burn,
+		predict_h1_new_burn(model_prep, model_forest)
+	),
+	tar_target(
+		pred_h1_old_burn,
+		predict_h1_old_burn(model_prep, model_forest)
 	),
 	tar_target(
 		pred_h1_forest,
@@ -301,8 +313,12 @@ targets_rss <- c(
 		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
 	),
 	tar_target(
-		rss_burn,
-		calc_rss(pred_h1_burn, 'h1_burn', pred_h2, 'h2')
+		rss_old_burn,
+		calc_rss(pred_h1_old_burn, 'h1_old_burn', pred_h2, 'h2')
+	),
+	tar_target(
+		rss_new_burn,
+		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2, 'h2')
 	),
 	tar_target(
 		plot_rss_forest,
@@ -311,10 +327,16 @@ targets_rss <- c(
 					 title = 'RSS compared to 0 forest')
 	),
 	tar_target(
-		plot_rss_burn,
-		plot_rss(rss_burn, plot_theme()) +
+		plot_rss_new_burn,
+		plot_rss(rss_new_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'logRSS',
-					 title = 'RSS compared to mean distance from burn')
+					 title = 'RSS compared to mean distance from post-1992 burn')
+	),
+	tar_target(
+		plot_rss_old_burn,
+		plot_rss(rss_old_burn, plot_theme()) +
+			labs(x = 'Distance to old burn (m)', y = 'logRSS',
+					 title = 'RSS compared to mean distance from pre-1992 burn')
 	)
 )
 
