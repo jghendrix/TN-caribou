@@ -273,6 +273,16 @@ targets_effects <- c(
 	tar_target(
 		plot_boxplot,
 		plot_box_horiz(indiv_summary, plot_theme())
+	),
+
+	tar_target(
+		indiv_roads,
+		indiv_estimates(model_roads)
+	),
+
+	tar_target(
+		roads_boxplot,
+		plot_box_horiz(indiv_roads, plot_theme())
 	)
 )
 
@@ -357,6 +367,62 @@ targets_rss <- c(
 			labs(x = 'Distance to old burn (m)', y = 'logRSS',
 				 title = 'RSS compared to median distance from pre-1992 burns')
 	),
+
+	# roads RSS
+
+	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
+	# the model includes a season:distance interaction, I'm not sure how to incorporate that into the predicted values
+	# is this a situation where i could map over season?
+	# Or does it make more sense to run four separate models for each season rather than have it as an interaction?
+
+	tar_target(
+		pred_h1_tch,
+		predict_h1_tch(model_prep, model_roads)
+	),
+
+
+#	tar_target(
+#		pred_h1_old_burn,
+#		predict_h1_old_burn(model_prep, model_forest)
+#	),
+#	tar_target(
+#		pred_h1_forest,
+#		predict_h1_forest(model_prep, model_forest)
+#	),
+#	tar_target(
+#		pred_h2,
+#		predict_h2(model_prep, model_forest)
+#	),
+#	tar_target(
+#		rss_forest,
+#		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
+#	),
+#	tar_target(
+#		rss_old_burn,
+#		calc_rss(pred_h1_old_burn, 'h1_old_burn', pred_h2, 'h2')
+#	),
+#	tar_target(
+#		rss_new_burn,
+#		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2, 'h2')
+#	),
+#	tar_target(
+#		plot_rss_forest,
+#		plot_rss(rss_forest, plot_theme()) +
+#			labs(x = 'Forest', y = 'logRSS',
+#					 title = 'RSS compared to 0 forest')
+#	),
+#	tar_target(
+#		plot_rss_new_burn,
+#		plot_rss(rss_new_burn, plot_theme()) +
+#			labs(x = 'Distance to new burn (m)', y = 'logRSS',
+#					 title = 'RSS compared to median distance from post-1992 burns')
+#	),
+#	tar_target(
+#		plot_rss_old_burn,
+#		plot_rss(rss_old_burn, plot_theme()) +
+#			labs(x = 'Distance to old burn (m)', y = 'logRSS',
+#					 title = 'RSS compared to median distance from pre-1992 burns')
+#	),
 
 	tar_target(
 		rss_plots,

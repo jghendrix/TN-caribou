@@ -9,7 +9,6 @@ model_roads_bin <- function(DT) {
 			forest +
 			I(log(sl_)):open +
 			open +
-			season +
 			I(log(sl_)):season +
 			I(log(dist_to_tch + 1)) +
 			I(log(dist_to_tch + 1)):I(log(sl_)) +
