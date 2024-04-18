@@ -28,5 +28,13 @@ prepare_model <- function(DT) {
 	# next shortest step is 1.072510e-06, substitute that?
 	DT[, sl_ := ifelse(sl_ == 0, 1.072510e-06, sl_)]
 
+	# splitting steps by season
+	DT[, season := str_extract(ANIMAL_SN, "(?<=_).*")]
+	DT[, season := str_extract(season, "(?<=_).*")]
 
-}
+	DT[, season := ifelse(season %in% c("FM", "FR"), "autumn", season)]
+	DT[, season := ifelse(season %in% c("C", "PC", "PCR"), "calving", season)]
+	DT[, season := ifelse(season == "W", "winter", season)]
+	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
+
+	}

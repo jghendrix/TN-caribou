@@ -27,6 +27,8 @@ legend_path <- file.path('input', 'cfs_legend.csv')
 
 # Path to burns
 burn_path <- file.path('input', 'Burn_Areas.gpkg')
+road_path <- file.path('output', 'terra-nova-roads.gpkg')
+
 
 # Variables ---------------------------------------------------------------
 # Targets: prepare
@@ -91,7 +93,13 @@ targets_data <- c(
 		burn,
 		burn_path,
 		st_read(!!.x)
-	)
+	),
+
+tar_file_read(
+	roads,
+	road_path,
+	st_read(!!.x)
+)
 )
 
 
@@ -177,6 +185,15 @@ targets_extract <- c(
 	),
 
 	tar_target(
+		tracks_roads,
+		dist_to_roads(
+			tracks_w_both,
+			crs,
+			roads
+		)
+		),
+
+	tar_target(
 		avail_lc,
 		calc_availability(tracks_w_both, 'lc_description', 'proportion', split_by)
 	)#,
@@ -222,28 +239,28 @@ targets_distributions <- c(
 targets_model <- c(
 	tar_target(
 		model_prep,
-		prepare_model(tracks_w_both)
+		prepare_model(tracks_roads)
 	),
-#	tar_target(
-#		model_lc,
-#		model_land_cover(model_prep)
-#	),
+
 	tar_target(
 		model_forest,
 		model_forest_bin(model_prep)
 	),
-#	tar_target(
-#		model_check_lc,
-#		model_check(model_lc)
-#	),
+
 	tar_target(
 		model_check_forest,
 		model_check(model_forest)
-	)#,
+	),
 
-#	tar_target(
-#		current_burn_lc,
-#		burn_lc_status(extract_burn))
+	tar_target(
+		model_roads,
+		model_roads_bin(model_prep)
+	),
+
+	tar_target(
+		model_check_roads,
+		model_check(model_roads)
+	)
 )
 
 # Targets: output and effects ------------------------------------------------------------
@@ -252,6 +269,7 @@ targets_effects <- c(
 		indiv_summary,
 		indiv_estimates(model_forest)
 	),
+
 	tar_target(
 		plot_boxplot,
 		plot_box_horiz(indiv_summary, plot_theme())
@@ -282,6 +300,7 @@ targets_speed <- c(
 		calc_speed_burn,
 		calc_speed(prep_speed, 'dist_to_new_burn', seq(1, 27000, length.out = 100L))
 	),
+
 	tar_target(
 		plot_speed_burn,
 		plot_dist(calc_speed_burn, plot_theme()) +
