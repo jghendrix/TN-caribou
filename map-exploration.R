@@ -129,7 +129,7 @@ ggsave(
 
 
 # Adding burn layer? ----
-utmBurn <- st_transform(burns, utm)
+utmBurn <- st_transform(burn_prep, utm)
 
 st_write(utmBurn, 'output/terra-nova-burns.gpkg')
 tnburns <- st_read('output/terra-nova-burns.gpkg')
@@ -143,17 +143,38 @@ tnburns <- st_zm(tnburns)
 # Fire map
 (gburn <- ggplot() +
  	geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
- 	geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
- 	geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
- 	geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+ #	geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
+ 	#geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
+ 	#geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
  	geom_sf(fill = "goldenrod", size = 0.3, color = "darkred",
  					data = tnburns) +
  	geom_sf(aes(color = highway), data = highway) +
  	scale_color_manual(values = roadpal) +
  	coord_sf(xlim = c(bb['xmin'], bb['xmax']),
  					 ylim = c(bb['ymin'], bb['ymax'])) +
- 	guides("none") +
+ #	guides("none") +
  	themeMap)
+
+
+# comparing updated burn file with original
+newBurn <- st_transform(updated, utm)
+newburns <- st_zm(newBurn)
+(gburn <- ggplot() +
+		geom_sf(fill = "lightgrey", size = 0.3, color = "grey25", data = nlcrop) +
+#		geom_sf(fill = "lightgreen", size = 0.3, color = "darkgreen", data = tn) +
+#		geom_sf(fill = "steelblue1", color = NA, data = streamPols) +
+#		geom_sf(color = "cornflowerblue", size = 0.4, data = streamLns) +
+		geom_sf(fill = "yellow", size = 0.3, color = "darkred",
+						data = newBurn) +
+		geom_sf(aes(color = highway), data = highway) +
+		scale_color_manual(values = roadpal) +
+		coord_sf(xlim = c(bb['xmin'], bb['xmax']),
+						 ylim = c(bb['ymin'], bb['ymax'])) +
+		#guides("none") +
+		themeMap)
+
+# we're missing a couple small ones at the intersection, but otherwise seems fine to run with this new one
+
 
 ### Importing caribou data ----
 caribou <- read.csv('input/TNNP_ALL_Caribou.csv')

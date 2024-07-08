@@ -1,7 +1,7 @@
 #' @title Prepare model data
 #' @export
 #' @author Julie W. Turner, Alec L. Robitaille
-prepare_model <- function(DT) {
+prepare_model <- function(DT, seasonal_split) {
 	DT[, indiv_step_id := paste(Animal_ID, step_id_, sep = '_')]
 
 	# Grouping together landcover categories into more meaningful levels
@@ -28,7 +28,7 @@ prepare_model <- function(DT) {
 	# next shortest step is 1.072510e-06, substitute that?
 	DT[, sl_ := ifelse(sl_ == 0, 1.072510e-06, sl_)]
 
-	# splitting steps by season
+	# getting season from season-id
 	DT[, season := str_extract(ANIMAL_SN, "(?<=_).*")]
 	DT[, season := str_extract(season, "(?<=_).*")]
 
@@ -36,5 +36,10 @@ prepare_model <- function(DT) {
 	DT[, season := ifelse(season %in% c("C", "PC", "PCR"), "calving", season)]
 	DT[, season := ifelse(season == "W", "winter", season)]
 	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
+
+
+	# Make splits
+	DT[, tar_group := .GRP, by = c(seasonal_split)]
+
 
 	}

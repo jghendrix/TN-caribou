@@ -18,7 +18,7 @@ tar_option_set(format = 'qs')
 locs_path <- file.path('input', 'TNNP_ALL_Caribou.csv')
 
 # Path to land covers
-lc_path <- file.path('input', '2024-03-12_Hermosilla_2019_land_cover.tif')
+lc_path <- file.path('input/lc', '2024-04-24_Hermosilla_2019_land_cover.tif')
 legend_path <- file.path('input', 'cfs_legend.csv')
 
 # Alternative landcover from NALCMS, but CFS is better I think
@@ -26,7 +26,7 @@ legend_path <- file.path('input', 'cfs_legend.csv')
 # nalcms_legend_path <- file.path('input', 'nalcms_legend.csv')
 
 # Path to burns
-burn_path <- file.path('input', 'Burn_Areas.gpkg')
+burn_path <- file.path('input', 'updated_fire.gpkg')
 road_path <- file.path('output', 'terra-nova-roads.gpkg')
 
 
@@ -45,6 +45,7 @@ tz <- 'America/St_Johns'
 # Split by: within which column or set of columns (eg. c(id, yr))
 #  do we want to split our analysis?
 split_by <- id_col
+seasonal_split <- "season"
 
 # Resampling rate
 rate <- minutes(120)
@@ -239,82 +240,119 @@ targets_distributions <- c(
 targets_model <- c(
 	tar_target(
 		model_prep,
-		prepare_model(tracks_roads)
+		prepare_model(tracks_roads, seasonal_split),
+		iteration = 'group'
+),
+
+tar_target(
+	season_key,
+	unique(model_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
+),
+
+	tar_target(
+		fire_model,
+		model_fire_bin(model_prep)
 	),
 
 	tar_target(
-		model_forest,
-		model_forest_bin(model_prep)
+		fire_model_check,
+		model_check(fire_model)
 	),
 
 	tar_target(
-		model_check_forest,
-		model_check(model_forest)
+		roads_model,
+		model_roads_bin(model_prep),
+		pattern = map(model_prep)
 	),
 
 	tar_target(
-		model_roads,
-		model_roads_bin(model_prep)
-	),
-
-	tar_target(
-		model_check_roads,
-		model_check(model_roads)
+		roads_model_check,
+		model_check(roads_model),
+		pattern = map(roads_model)
 	)
 )
 
 # Targets: output and effects ------------------------------------------------------------
 targets_effects <- c(
 	tar_target(
-		indiv_summary,
-		indiv_estimates(model_forest)
+		indiv_fire,
+		indiv_estimates(fire_model)
 	),
 
 	tar_target(
-		plot_boxplot,
-		plot_box_horiz(indiv_summary, plot_theme())
+		fire_boxplot,
+		plot_box_horiz(indiv_fire, plot_theme())
 	),
 
 	tar_target(
 		indiv_roads,
-		indiv_estimates(model_roads)
+		indiv_estimates(roads_model),
+		pattern = map(roads_model)
 	),
 
 	tar_target(
 		roads_boxplot,
-		plot_box_horiz(indiv_roads, plot_theme())
+		plot_box_horiz(indiv_roads, plot_theme()),
+		pattern = map(indiv_roads)
 	)
 )
 
 # Targets: speed ------------------------------------------------------------
 targets_speed <- c(
 	tar_target(
-		prep_speed,
+		prep_speed_fire,
 		prepare_speed(
 			DT = model_prep,
-			summary = indiv_summary,
+			summary = indiv_fire,
 			params = dist_parameters
 		)
 	),
 	tar_target(
-		calc_speed_open,
-		calc_speed(prep_speed, 'open', seq = 0:1)
+		calc_speed_open_fire,
+		calc_speed(prep_speed_fire, 'open', seq = 0:1)
 	),
 	tar_target(
-		plot_speed_open,
-		plot_box(calc_speed_open, plot_theme()) +
+		plot_speed_open_fire,
+		plot_box(calc_speed_open_fire, plot_theme()) +
 			labs(x = 'Closed vs open', y = 'Speed (m/2hr)')
 	),
-
 	tar_target(
 		calc_speed_burn,
-		calc_speed(prep_speed, 'dist_to_new_burn', seq(1, 27000, length.out = 100L))
+		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 27000, length.out = 100L))
 	),
-
 	tar_target(
 		plot_speed_burn,
 		plot_dist(calc_speed_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'Speed (m/2hr)')
+	),
+
+	# roads speeds
+	tar_target(
+		prep_speed_roads,
+		prepare_speed(
+			DT = model_prep,
+			summary = indiv_roads,
+			params = dist_parameters
+		)
+	),
+	tar_target(
+		calc_speed_open_roads,
+		calc_speed_road(prep_speed_roads, 'open', seq = 0:1)
+	),
+	tar_target(
+		plot_speed_open_roads,
+		plot_box(calc_speed_open_roads, plot_theme()) +
+			labs(x = 'Closed vs open', y = 'Speed (m/2hr)')
+	),
+	# ^ does response to open vs. closed vary between our fire model and roads model? theoretically it shouldn't matter much
+	tar_target(
+		calc_speed_roads,
+		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L))
+	),
+	tar_target(
+		plot_speed_roads,
+		plot_dist(calc_speed_roads, plot_theme()) +
+			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)')
 	)
 
 )
@@ -323,19 +361,19 @@ targets_speed <- c(
 targets_rss <- c(
 	tar_target(
 		pred_h1_new_burn,
-		predict_h1_new_burn(model_prep, model_forest)
+		predict_h1_new_burn(model_prep, fire_model)
 	),
 	tar_target(
 		pred_h1_old_burn,
-		predict_h1_old_burn(model_prep, model_forest)
+		predict_h1_old_burn(model_prep, fire_model)
 	),
 	tar_target(
 		pred_h1_forest,
-		predict_h1_forest(model_prep, model_forest)
+		predict_h1_forest(model_prep, fire_model)
 	),
 	tar_target(
 		pred_h2,
-		predict_h2(model_prep, model_forest)
+		predict_h2(model_prep, fire_model)
 	),
 	tar_target(
 		rss_forest,
@@ -353,7 +391,7 @@ targets_rss <- c(
 		plot_rss_forest,
 		plot_rss(rss_forest, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
-					 title = 'RSS compared to 0 forest')
+					 title = 'RSS compared to 0 forest (fire model)')
 	),
 	tar_target(
 		plot_rss_new_burn,
@@ -368,7 +406,7 @@ targets_rss <- c(
 				 title = 'RSS compared to median distance from pre-1992 burns')
 	),
 
-	# roads RSS
+	# Roads RSS
 
 	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
 	# the model includes a season:distance interaction, I'm not sure how to incorporate that into the predicted values
@@ -376,59 +414,66 @@ targets_rss <- c(
 	# Or does it make more sense to run four separate models for each season rather than have it as an interaction?
 
 	tar_target(
+		pred_h1_forest_roads,
+		predict_h1_forest_roads(model_prep, roads_model)
+	),
+	tar_target(
 		pred_h1_tch,
-		predict_h1_tch(model_prep, model_roads)
+		predict_h1_tch(model_prep, roads_model),
+		pattern = map(roads_model)
+	),
+	tar_target(
+		pred_h1_minor,
+		predict_h1_minor(model_prep, roads_model),
+		pattern = map(roads_model)
+	),
+	tar_target(
+		pred_h2_roads,
+		predict_h2_roads(model_prep, roads_model),
+		pattern = map(roads_model)
 	),
 
+	tar_target(
+		rss_forest_roads,
+		calc_rss(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads')
+	),
+	tar_target(
+		rss_tch,
+		calc_rss(pred_h1_tch, 'h1_tch', pred_h2_roads, 'h2_roads'),
+		pattern = map(pred_h1_tch)
+	),
+	tar_target(
+		rss_minor,
+		calc_rss(pred_h1_minor, 'h1_minor', pred_h2_roads, 'h2_roads'),
+		pattern = map(pred_h1_minor)
+	),
 
-#	tar_target(
-#		pred_h1_old_burn,
-#		predict_h1_old_burn(model_prep, model_forest)
-#	),
-#	tar_target(
-#		pred_h1_forest,
-#		predict_h1_forest(model_prep, model_forest)
-#	),
-#	tar_target(
-#		pred_h2,
-#		predict_h2(model_prep, model_forest)
-#	),
-#	tar_target(
-#		rss_forest,
-#		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
-#	),
-#	tar_target(
-#		rss_old_burn,
-#		calc_rss(pred_h1_old_burn, 'h1_old_burn', pred_h2, 'h2')
-#	),
-#	tar_target(
-#		rss_new_burn,
-#		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2, 'h2')
-#	),
-#	tar_target(
-#		plot_rss_forest,
-#		plot_rss(rss_forest, plot_theme()) +
-#			labs(x = 'Forest', y = 'logRSS',
-#					 title = 'RSS compared to 0 forest')
-#	),
-#	tar_target(
-#		plot_rss_new_burn,
-#		plot_rss(rss_new_burn, plot_theme()) +
-#			labs(x = 'Distance to new burn (m)', y = 'logRSS',
-#					 title = 'RSS compared to median distance from post-1992 burns')
-#	),
-#	tar_target(
-#		plot_rss_old_burn,
-#		plot_rss(rss_old_burn, plot_theme()) +
-#			labs(x = 'Distance to old burn (m)', y = 'logRSS',
-#					 title = 'RSS compared to median distance from pre-1992 burns')
-#	),
+	tar_target(
+		plot_rss_forest_roads,
+		plot_rss(rss_forest_roads, plot_theme()) +
+			labs(x = 'Forest', y = 'logRSS',
+					 title = 'RSS compared to 0 forest (roads model)')
+	),
+	tar_target(
+		plot_rss_tch,
+		plot_rss(rss_tch, plot_theme()) +
+			labs(x = 'Distance to TCH (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance to TCH')
+	),
+	tar_target(
+		plot_rss_minor,
+		plot_rss(rss_minor, plot_theme()) +
+			labs(x = 'Distance to minor roads (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance from minor roads')
+	),
 
 	tar_target(
 		rss_plots,
 		save_rss_plot(plot_rss_forest,
 									plot_rss_old_burn,
-									plot_rss_new_burn)
+									plot_rss_new_burn,
+									plot_rss_tch,
+									plot_rss_minor)
 	)
 )
 
