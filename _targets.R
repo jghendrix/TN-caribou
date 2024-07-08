@@ -240,10 +240,8 @@ targets_distributions <- c(
 targets_model <- c(
 	tar_target(
 		model_prep,
-		prepare_model(tracks_roads, seasonal_split),
-		iteration = 'group'
+		prepare_model(tracks_roads)
 ),
-
 tar_target(
 	season_key,
 	unique(model_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
@@ -253,7 +251,6 @@ tar_target(
 		fire_model,
 		model_fire_bin(model_prep)
 	),
-
 	tar_target(
 		fire_model_check,
 		model_check(fire_model)
@@ -262,7 +259,7 @@ tar_target(
 	tar_target(
 		roads_model,
 		model_roads_bin(model_prep),
-		pattern = map(model_prep)
+		iteration = 'group'
 	),
 
 	tar_target(
@@ -415,7 +412,8 @@ targets_rss <- c(
 
 	tar_target(
 		pred_h1_forest_roads,
-		predict_h1_forest_roads(model_prep, roads_model)
+		predict_h1_forest_roads(model_prep, roads_model),
+		pattern = map(roads_model)
 	),
 	tar_target(
 		pred_h1_tch,
@@ -435,8 +433,10 @@ targets_rss <- c(
 
 	tar_target(
 		rss_forest_roads,
-		calc_rss(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads')
+		calc_rss(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads'),
+		map(pred_h1_forest_roads)
 	),
+
 	tar_target(
 		rss_tch,
 		calc_rss(pred_h1_tch, 'h1_tch', pred_h2_roads, 'h2_roads'),
@@ -452,7 +452,8 @@ targets_rss <- c(
 		plot_rss_forest_roads,
 		plot_rss(rss_forest_roads, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
-					 title = 'RSS compared to 0 forest (roads model)')
+					 title = 'RSS compared to 0 forest (roads model)'),
+		map(rss_forest_roads)
 	),
 	tar_target(
 		plot_rss_tch,

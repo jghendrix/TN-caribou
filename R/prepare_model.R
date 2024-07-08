@@ -1,7 +1,7 @@
 #' @title Prepare model data
 #' @export
-#' @author Julie W. Turner, Alec L. Robitaille
-prepare_model <- function(DT, seasonal_split) {
+#' @author Jack G Hendrix
+prepare_model <- function(DT) {
 	DT[, indiv_step_id := paste(Animal_ID, step_id_, sep = '_')]
 
 	# Grouping together landcover categories into more meaningful levels
@@ -36,10 +36,5 @@ prepare_model <- function(DT, seasonal_split) {
 	DT[, season := ifelse(season %in% c("C", "PC", "PCR"), "calving", season)]
 	DT[, season := ifelse(season == "W", "winter", season)]
 	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
-
-
-	# Make splits
-	DT[, tar_group := .GRP, by = c(seasonal_split)]
-
 
 	}

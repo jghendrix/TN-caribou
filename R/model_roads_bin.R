@@ -2,6 +2,10 @@
 
 model_roads_bin <- function(DT) {
 
+	# split DT by season before running the model?
+	DT[, tar_group := .GRP, by = "season"]
+
+
 	glmmTMB(
 		case_ ~ -1 +
 			I(log(sl_)) +
