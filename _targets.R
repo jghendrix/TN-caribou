@@ -256,6 +256,8 @@ tar_target(
 		model_check(fire_model)
 	),
 
+# THIS IS THE ISSUE
+## trying to branch over seasons and run four separate models, and then look at the output & RSS for each season independently... something in my branching syntax is not working. If i iterate this over a list, it'll run, but then the subsequent targets won't recognize a list as an input? Or something?? really unsure
 	tar_target(
 		roads_model,
 		model_roads_bin(model_prep),
