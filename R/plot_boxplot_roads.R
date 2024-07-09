@@ -10,10 +10,11 @@ plot_boxplot_roads <- function(DT, theme) {
 		geom_jitter() +
 		geom_hline(yintercept = 0, lty = 'dashed') +
 		coord_flip() +
-		plot_theme()
+		plot_theme() +
+		ggtitle(DT$season)
 
 	ggsave(
-		filename = paste0('graphics/roads_indiv_responses', DT$season, '.png'),
+		filename = paste0('graphics/roads_indiv_responses_', DT$season, '.png'),
 		gbox,
 		width = 10,
 		height = 10,

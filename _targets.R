@@ -236,7 +236,7 @@ targets_distributions <- c(
 
 
 
-# Targets: model ----------------------------------------------------------
+# Targets: fire model ----------------------------------------------------------
 targets_model <- c(
 	tar_target(
 		model_prep,
@@ -249,7 +249,11 @@ targets_model <- c(
 	tar_target(
 		fire_model_check,
 		model_check(fire_model)
-	),
+	)
+)
+
+# Targets: roads model ----------------------------------------
+targets_roads <- c(
 
 tar_target(
 	season_prep,
@@ -260,13 +264,11 @@ tar_target(
 	season_key,
 	unique(season_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
 ),
-
 	tar_target(
 		roads_model,
 		model_roads_bin(season_prep),
 		map(season_prep)
 	),
-
 	tar_target(
 		roads_model_check,
 		model_check(roads_model),
@@ -280,7 +282,6 @@ targets_effects <- c(
 		indiv_fire,
 		indiv_estimates(fire_model)
 	),
-
 	tar_target(
 		fire_boxplot,
 		plot_box_horiz(indiv_fire, plot_theme())
@@ -291,7 +292,6 @@ targets_effects <- c(
 		indiv_estimates(roads_model, season_key),
 		pattern = map(roads_model, season_key)
 	),
-
 	tar_target(
 		roads_boxplot,
 		plot_boxplot_roads(indiv_roads, plot_theme()),
@@ -299,8 +299,8 @@ targets_effects <- c(
 	)
 )
 
-# Targets: speed ------------------------------------------------------------
-targets_speed <- c(
+# Targets: speed from fire ------------------------------------------------------------
+targets_speed_f <- c(
 	tar_target(
 		prep_speed_fire,
 		prepare_speed(
@@ -326,40 +326,47 @@ targets_speed <- c(
 		plot_speed_burn,
 		plot_dist(calc_speed_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'Speed (m/2hr)')
-	),
+	)
+)
 
-	# roads speeds
+# Targets: speed from roads --------------------------
+targets_speed_r <- c(
+
 	tar_target(
 		prep_speed_roads,
 		prepare_speed(
-			DT = model_prep,
+			DT = season_prep,
 			summary = indiv_roads,
 			params = dist_parameters
-		)
+		),
+		map(indiv_roads)
 	),
 	tar_target(
 		calc_speed_open_roads,
-		calc_speed_road(prep_speed_roads, 'open', seq = 0:1)
+		calc_speed_road(prep_speed_roads, 'open', seq = 0:1),
+		map(prep_speed_roads)
 	),
 	tar_target(
 		plot_speed_open_roads,
 		plot_box(calc_speed_open_roads, plot_theme()) +
-			labs(x = 'Closed vs open', y = 'Speed (m/2hr)')
+			labs(x = 'Closed vs open', y = 'Speed (m/2hr)'),
+		map(calc_speed_open_roads)
 	),
 	# ^ does response to open vs. closed vary between our fire model and roads model? theoretically it shouldn't matter much
 	tar_target(
 		calc_speed_roads,
-		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L))
+		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L)),
+		map(prep_speed_roads)
 	),
 	tar_target(
 		plot_speed_roads,
 		plot_dist(calc_speed_roads, plot_theme()) +
-			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)')
+			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)'),
+		map(calc_speed_roads)
 	)
-
 )
 
-# Targets: RSS ------------------------------------------------------------
+# Targets: RSS from fire model -----------------------------------------------------------
 targets_rss <- c(
 	tar_target(
 		pred_h1_new_burn,
@@ -390,7 +397,7 @@ targets_rss <- c(
 		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2, 'h2')
 	),
 	tar_target(
-		plot_rss_forest,
+		plot_rss_forest_fire,
 		plot_rss(rss_forest, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
 					 title = 'RSS compared to 0 forest (fire model)')
@@ -406,10 +413,11 @@ targets_rss <- c(
 		plot_rss(rss_old_burn, plot_theme()) +
 			labs(x = 'Distance to old burn (m)', y = 'logRSS',
 				 title = 'RSS compared to median distance from pre-1992 burns')
-	),
+	)
+)
 
-	# Roads RSS
-
+	# Targets: RSS from road model -----------------------------------------------------------
+	targets_rss_roads <- c(
 	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
 	# the model includes a season:distance interaction, I'm not sure how to incorporate that into the predicted values
 	# is this a situation where i could map over season?
@@ -475,9 +483,10 @@ targets_rss <- c(
 
 	tar_target(
 		rss_plots,
-		save_rss_plot(plot_rss_forest,
+		save_rss_plot(plot_rss_forest_fire,
 									plot_rss_old_burn,
 									plot_rss_new_burn,
+									plot_rss_forest_roads,
 									plot_rss_tch,
 									plot_rss_minor)
 	)
