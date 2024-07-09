@@ -1,10 +1,6 @@
-## response to linear features by season
+## response to linear features
 
 model_roads_bin <- function(DT) {
-
-	# split DT by season before running the model?
-	DT[, tar_group := .GRP, by = "season"]
-
 
 	glmmTMB(
 		case_ ~ -1 +

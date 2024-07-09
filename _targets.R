@@ -258,16 +258,23 @@ tar_target(
 
 # THIS IS THE ISSUE
 ## trying to branch over seasons and run four separate models, and then look at the output & RSS for each season independently... something in my branching syntax is not working. If i iterate this over a list, it'll run, but then the subsequent targets won't recognize a list as an input? Or something?? really unsure
+
+tar_target(
+	season_prep,
+	model_prep[, tar_group := .GRP, by = c('season')],
+	iteration = 'group'
+),
+
 	tar_target(
 		roads_model,
-		model_roads_bin(model_prep),
-		iteration = 'group'
+		model_roads_bin(season_prep),
+		map(season_prep)
 	),
 
 	tar_target(
 		roads_model_check,
 		model_check(roads_model),
-		pattern = map(roads_model)
+		map(roads_model)
 	)
 )
 
@@ -291,7 +298,7 @@ targets_effects <- c(
 
 	tar_target(
 		roads_boxplot,
-		plot_box_horiz(indiv_roads, plot_theme()),
+		plot_boxplot_roads(indiv_roads, plot_theme()),
 		pattern = map(indiv_roads)
 	)
 )

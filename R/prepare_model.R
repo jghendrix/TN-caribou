@@ -37,4 +37,5 @@ prepare_model <- function(DT) {
 	DT[, season := ifelse(season == "W", "winter", season)]
 	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
 
+	DT[, season := as.factor(season)]
 	}
