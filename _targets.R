@@ -242,11 +242,6 @@ targets_model <- c(
 		model_prep,
 		prepare_model(tracks_roads)
 ),
-tar_target(
-	season_key,
-	unique(model_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
-),
-
 	tar_target(
 		fire_model,
 		model_fire_bin(model_prep)
@@ -256,13 +251,14 @@ tar_target(
 		model_check(fire_model)
 	),
 
-# THIS IS THE ISSUE
-## trying to branch over seasons and run four separate models, and then look at the output & RSS for each season independently... something in my branching syntax is not working. If i iterate this over a list, it'll run, but then the subsequent targets won't recognize a list as an input? Or something?? really unsure
-
 tar_target(
 	season_prep,
 	model_prep[, tar_group := .GRP, by = c('season')],
 	iteration = 'group'
+),
+tar_target(
+	season_key,
+	unique(season_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
 ),
 
 	tar_target(
@@ -292,8 +288,8 @@ targets_effects <- c(
 
 	tar_target(
 		indiv_roads,
-		indiv_estimates(roads_model),
-		pattern = map(roads_model)
+		indiv_estimates(roads_model, season_key),
+		pattern = map(roads_model, season_key)
 	),
 
 	tar_target(
