@@ -1,7 +1,7 @@
-#' @title Plot RSS_seasonally for minor roads
+#' @title Plot RSS_seasonally for forest cover
 #' @export
 #' @author Julie W. Turner, Alec L. Robitaille
-plot_rss_seasonal_minor <- function(rss, theme) {
+plot_rss_seasonal_forest <- function(rss, theme) {
 
 	rss %<>% mutate(s_code = ifelse(season == "winter", 1, 2),
 								 s_code = ifelse(season == "calving", 3, s_code),
@@ -25,11 +25,11 @@ ggplot(data, aes(x, rss)) +
 		scale_fill_colorblind() +
 		#scale_x_continuous(limits = c(0, 5000)) +
 		plot_theme() +
-		labs(x = 'Distance to minor roads (m)', y = 'logRSS') +
-		ggtitle(paste0('RSS compared to median distance to minor roads - ', data$season))
+		labs(x = 'Forest', y = 'logRSS') +
+		ggtitle(paste0('RSS compared to 0 forest - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_minor_tch', i, '.png'),
+	filename = paste0('graphics/rss_forest_', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320

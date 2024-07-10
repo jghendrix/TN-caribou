@@ -413,6 +413,12 @@ targets_rss <- c(
 		plot_rss(rss_old_burn, plot_theme()) +
 			labs(x = 'Distance to old burn (m)', y = 'logRSS',
 				 title = 'RSS compared to median distance from pre-1992 burns')
+	),
+	tar_target(
+		rss_plots,
+		save_rss_plot(plot_rss_forest_fire,
+									plot_rss_old_burn,
+									plot_rss_new_burn)
 	)
 )
 
@@ -460,31 +466,15 @@ targets_rss <- c(
 
 	tar_target(
 		plot_rss_forest_roads,
-		plot_rss_seasonal(rss_forest_roads, plot_theme()) +
-			labs(x = 'Forest', y = 'logRSS',
-					 title = 'RSS compared to 0 forest (roads model)'),
-		map(rss_forest_roads)
+		plot_rss_seasonal_forest(rss_forest_roads, plot_theme())
 	),
 	tar_target(
 		plot_rss_tch,
-		plot_rss_seasonal(rss_tch, plot_theme())
+		plot_rss_seasonal_tch(rss_tch, plot_theme())
 	),
-
 	tar_target(
 		plot_rss_minor,
-		plot_rss(rss_minor, plot_theme()) +
-			labs(x = 'Distance to minor roads (m)', y = 'logRSS',
-					 title = 'RSS compared to median distance from minor roads')
-	),
-
-	tar_target(
-		rss_plots,
-		save_rss_plot(plot_rss_forest_fire,
-									plot_rss_old_burn,
-									plot_rss_new_burn,
-									plot_rss_forest_roads,
-									plot_rss_tch,
-									plot_rss_minor)
+		plot_rss_seasonal_minor(rss_minor, plot_theme())
 	)
 )
 

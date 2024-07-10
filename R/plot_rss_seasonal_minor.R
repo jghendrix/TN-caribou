@@ -29,7 +29,7 @@ ggplot(data, aes(x, rss)) +
 		ggtitle(paste0('RSS compared to median distance to minor roads - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_minor_tch', i, '.png'),
+	filename = paste0('graphics/rss_minor_', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320
