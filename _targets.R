@@ -349,23 +349,22 @@ targets_speed_r <- c(
 	),
 	tar_target(
 		plot_speed_open_roads,
-		plot_box(calc_speed_open_roads, plot_theme()) +
-			labs(x = 'Closed vs open', y = 'Speed (m/2hr)'),
-		map(calc_speed_open_roads)
+		plot_box_roads_speed(calc_speed_open_roads, plot_theme())
 	),
 	# ^ does response to open vs. closed vary between our fire model and roads model? theoretically it shouldn't matter much
+
 	tar_target(
 		calc_speed_roads,
-		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L)),
-		map(prep_speed_roads)
+		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L), season_key),
+		map(prep_speed_roads, season_key)
 	),
 	tar_target(
 		plot_speed_roads,
-		plot_dist(calc_speed_roads, plot_theme()) +
-			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)'),
-		map(calc_speed_roads)
+		plot_dist_seasonal(calc_speed_roads, plot_theme())
 	)
 )
+## ^ these seasonal plots look like garbage? but maybe that's what they're meant to look like?
+
 
 # Targets: RSS from fire model -----------------------------------------------------------
 targets_rss <- c(
@@ -420,61 +419,57 @@ targets_rss <- c(
 	# Targets: RSS from road model -----------------------------------------------------------
 	targets_rss_roads <- c(
 	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
-	# the model includes a season:distance interaction, I'm not sure how to incorporate that into the predicted values
-	# is this a situation where i could map over season?
-	# Or does it make more sense to run four separate models for each season rather than have it as an interaction?
 
 	tar_target(
 		pred_h1_forest_roads,
-		predict_h1_forest_roads(model_prep, roads_model),
-		pattern = map(roads_model)
+		predict_h1_forest_roads(season_prep, roads_model, season_key),
+		pattern = map(season_prep, roads_model, season_key)
 	),
 	tar_target(
 		pred_h1_tch,
-		predict_h1_tch(model_prep, roads_model),
-		pattern = map(roads_model)
+		predict_h1_tch(season_prep, roads_model, season_key),
+		pattern = map(season_prep, roads_model, season_key)
 	),
 	tar_target(
 		pred_h1_minor,
-		predict_h1_minor(model_prep, roads_model),
-		pattern = map(roads_model)
+		predict_h1_minor(season_prep, roads_model, season_key),
+		pattern = map(season_prep, roads_model, season_key)
 	),
 	tar_target(
 		pred_h2_roads,
-		predict_h2_roads(model_prep, roads_model),
-		pattern = map(roads_model)
+		predict_h2_roads(season_prep, roads_model, season_key),
+		pattern = map(season_prep, roads_model, season_key)
 	),
 
 	tar_target(
 		rss_forest_roads,
-		calc_rss(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads'),
-		map(pred_h1_forest_roads)
+		calc_rss_seasonal(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads', season_key),
+		map(pred_h1_forest_roads, season_key)
 	),
 
 	tar_target(
 		rss_tch,
-		calc_rss(pred_h1_tch, 'h1_tch', pred_h2_roads, 'h2_roads'),
-		pattern = map(pred_h1_tch)
+		calc_rss_seasonal(pred_h1_tch, 'h1_tch', pred_h2_roads, 'h2_roads', season_key),
+		pattern = map(pred_h1_tch, season_key)
 	),
 	tar_target(
 		rss_minor,
-		calc_rss(pred_h1_minor, 'h1_minor', pred_h2_roads, 'h2_roads'),
-		pattern = map(pred_h1_minor)
+		calc_rss_seasonal(pred_h1_minor, 'h1_minor', pred_h2_roads, 'h2_roads', season_key),
+		pattern = map(pred_h1_minor, season_key)
 	),
 
 	tar_target(
 		plot_rss_forest_roads,
-		plot_rss(rss_forest_roads, plot_theme()) +
+		plot_rss_seasonal(rss_forest_roads, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
 					 title = 'RSS compared to 0 forest (roads model)'),
 		map(rss_forest_roads)
 	),
 	tar_target(
 		plot_rss_tch,
-		plot_rss(rss_tch, plot_theme()) +
-			labs(x = 'Distance to TCH (m)', y = 'logRSS',
-					 title = 'RSS compared to median distance to TCH')
+		plot_rss_seasonal(rss_tch, plot_theme())
 	),
+
 	tar_target(
 		plot_rss_minor,
 		plot_rss(rss_minor, plot_theme()) +

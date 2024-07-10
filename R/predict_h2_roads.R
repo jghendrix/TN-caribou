@@ -1,7 +1,7 @@
 #' @title Predict H2 roads
 #' @export
 #' @author Jack G Hendrix
-predict_h2_roads <- function(DT, model) {
+predict_h2_roads <- function(DT, model, season_key) {
 	new_data <- DT[, .(
 		sl_ = mean(sl_),
 		forest = 0,
@@ -12,4 +12,5 @@ predict_h2_roads <- function(DT, model) {
 	), by = id]
 
 	new_data[, h2_roads := predict(model, .SD, type = 'link', re.form = NULL)]
+	new_data[, season := season_key$season]
 }

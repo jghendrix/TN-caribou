@@ -1,7 +1,7 @@
 #' @title Plot boxplot
 #' @export
 #' @author Julie W. Turner
-plot_box<- function(DT, theme) {
+plot_box <- function(DT, theme) {
 
 	ggplot(data = DT,
 				 aes(as.factor(x), spd)) +

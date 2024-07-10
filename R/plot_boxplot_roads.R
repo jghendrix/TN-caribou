@@ -1,4 +1,4 @@
-#' @title Plot boxplot for roads model
+#' @title Plot horizontal boxplots for roads model
 #' @export
 #' @author Jack G Hendrix
 plot_boxplot_roads <- function(DT, theme) {
