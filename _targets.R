@@ -289,7 +289,7 @@ targets_effects <- c(
 
 	tar_target(
 		indiv_roads,
-		indiv_estimates(roads_model, season_key),
+		indiv_seasonal(roads_model, season_key),
 		pattern = map(roads_model, season_key)
 	),
 	tar_target(
@@ -334,17 +334,18 @@ targets_speed_r <- c(
 
 	tar_target(
 		prep_speed_roads,
-		prepare_speed(
+		prepare_speed_seasonal(
 			DT = season_prep,
 			summary = indiv_roads,
-			params = dist_parameters
+			params = dist_parameters,
+			season_key = season_key
 		),
-		map(indiv_roads)
+		map(indiv_roads, season_key)
 	),
 	tar_target(
 		calc_speed_open_roads,
-		calc_speed_road(prep_speed_roads, 'open', seq = 0:1),
-		map(prep_speed_roads)
+		calc_speed_road(prep_speed_roads, 'open', seq = 0:1, season_key),
+		map(prep_speed_roads, season_key)
 	),
 	tar_target(
 		plot_speed_open_roads,

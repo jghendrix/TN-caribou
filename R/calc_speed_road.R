@@ -1,7 +1,7 @@
 #' @title Calculate speed w/ roads
 #' @export
 #' @author Jack G Hendrix
-calc_speed_road <- function(DT, covariate, seq) {
+calc_speed_road <- function(DT, covariate, seq, season_key) {
 	if(covariate == "forest")
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest`*seq +
@@ -28,5 +28,5 @@ calc_speed_road <- function(DT, covariate, seq) {
 		by=.(id)]
 
 	move <- DT[, .(spd = unlist(spd), x = unlist(x)), by=.(id)]
-	move
+	move[, season := season_key$season]
 }
