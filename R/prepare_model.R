@@ -1,6 +1,6 @@
 #' @title Prepare model data
 #' @export
-#' @author Julie W. Turner, Alec L. Robitaille
+#' @author Jack G Hendrix
 prepare_model <- function(DT) {
 	DT[, indiv_step_id := paste(Animal_ID, step_id_, sep = '_')]
 
@@ -28,5 +28,14 @@ prepare_model <- function(DT) {
 	# next shortest step is 1.072510e-06, substitute that?
 	DT[, sl_ := ifelse(sl_ == 0, 1.072510e-06, sl_)]
 
+	# getting season from season-id
+	DT[, season := str_extract(ANIMAL_SN, "(?<=_).*")]
+	DT[, season := str_extract(season, "(?<=_).*")]
 
-}
+	DT[, season := ifelse(season %in% c("FM", "FR"), "autumn", season)]
+	DT[, season := ifelse(season %in% c("C", "PC", "PCR"), "calving", season)]
+	DT[, season := ifelse(season == "W", "winter", season)]
+	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
+
+	DT[, season := as.factor(season)]
+	}

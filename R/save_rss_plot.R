@@ -4,21 +4,21 @@ save_rss_plot <- function(plot_rss_forest,
 
 {
 
-ggsave("graphics/rss_forest.png",
+ggsave("graphics/rss_fire_forest.png",
 			 plot = plot_rss_forest,
 			 width = 2000,
 			 height = 1500,
 			 dpi = 320,
 			 units="px")
 
-ggsave("graphics/rss_old_burn.png",
+ggsave("graphics/rss_fire_old_burn.png",
 			 plot = plot_rss_old_burn,
 			 width = 2000,
 			 height = 1500,
 			 dpi = 320,
 			 units="px")
 
-ggsave("graphics/rss_new_burn.png",
+ggsave("graphics/rss_fire_new_burn.png",
 			 plot = plot_rss_new_burn,
 			 width = 2000,
 			 height = 1500,

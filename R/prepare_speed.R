@@ -1,6 +1,6 @@
-#' @title Prepare speed calcs
+#' @title Prepare speed
 #' @export
-#' @author Julie W. Turner
+#' @author Jack G Hendrix
 prepare_speed <- function(DT, summary, params) {
 	sum.distburn <- DT[,.(mean.burn = mean(dist_to_new_burn, na.rm = T),
 																 median.burn = median(dist_to_new_burn, na.rm = T),

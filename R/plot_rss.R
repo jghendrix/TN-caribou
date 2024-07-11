@@ -15,5 +15,6 @@ ggplot(data = rss, aes(x, rss)) +
 		) +
 		scale_color_colorblind()  +
 		scale_fill_colorblind() +
+		#scale_x_continuous(limits = c(0, 5000)) +
 		plot_theme()
 }
