@@ -15,7 +15,7 @@ predict_h1_forest_seasonal <- function(DT, model, predictor, season_key)
 			indiv_step_id = NA),
 			by = id]
 
-	if(predictor == "roads")
+	if(predictor == "road")
 		new_data <-	DT[, .(
 		sl_ = mean(sl_),
 		forest = seq(from = 0, to = 1, length.out = 100L),

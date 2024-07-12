@@ -282,6 +282,7 @@ targets_speed_fire <- c(
 		prepare_speed(
 			DT = model_prep,
 			summary = indiv_fire,
+			model = "fire",
 			params = dist_parameters
 		)
 	),
@@ -292,11 +293,11 @@ targets_speed_fire <- c(
 	tar_target(
 		plot_speed_open_fire,
 		plot_box(calc_speed_open_fire, plot_theme()) +
-			labs(x = 'Closed vs open', y = 'Speed (m/2hr)')
+			labs(x = 'Open', y = 'Speed (m/2hr)')
 	),
 	tar_target(
 		calc_speed_burn,
-		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 27000, length.out = 100L))
+		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 20000, length.out = 100L))
 	),
 	tar_target(
 		plot_speed_burn,
@@ -319,6 +320,7 @@ targets_speed_fire_seasonal <- c(
 		prepare_speed_seasonal(
 			DT = season_prep,
 			summary = s_indiv_fire,
+			model = "fire",
 			params = dist_parameters,
 			season_key = season_key
 		),
@@ -336,7 +338,7 @@ targets_speed_fire_seasonal <- c(
 
 	tar_target(
 		calc_speed_s_fire,
-		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 80000, length.out = 100L), season_key),
+		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 20000, length.out = 100L), season_key),
 		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
@@ -349,7 +351,7 @@ targets_speed_fire_seasonal <- c(
 ## There is something funky going on with the speed estimates... not sure if that is indicative of an issue with the model itself? ----
 
 # Targets: RSS from annual fire model -----------------------------------------------------------
-targets_rss <- c(
+targets_rss_fire <- c(
 	tar_target(
 		pred_h1_new_burn,
 		predict_h1_new_burn(model_prep, fire_model)
@@ -359,16 +361,16 @@ targets_rss <- c(
 		predict_h1_old_burn(model_prep, fire_model)
 	),
 	tar_target(
-		pred_h1_forest,
-		predict_h1_forest(model_prep, fire_model)
+		pred_h1_forest_fire,
+		predict_h1_forest(model_prep, fire_model, "fire")
 	),
 	tar_target(
 		pred_h2_fire,
-		predict_h2(model_prep, fire_model)
+		predict_h2(model_prep, fire_model, "fire")
 	),
 	tar_target(
 		rss_forest_fire,
-		calc_rss(pred_h1_forest, 'h1_forest', pred_h2_fire, 'h2')
+		calc_rss(pred_h1_forest_fire, 'h1_forest', pred_h2_fire, 'h2')
 	),
 	tar_target(
 		rss_old_burn,
@@ -398,9 +400,9 @@ targets_rss <- c(
 	),
 	tar_target(
 		fire_rss_plots,
-		save_rss_plot(plot_rss_forest_fire,
-									plot_rss_old_burn,
-									plot_rss_new_burn)
+		save_rss_plot(plot_rss_forest_fire, "rss_forest_fire-model",
+									plot_rss_old_burn, "rss_dist_to_old_burn",
+									plot_rss_new_burn, "rss_dist_to_new_burn")
 	)
 )
 
@@ -447,7 +449,7 @@ targets_rss_fire_seasonal <- c(
 
 	tar_target(
 		plot_rss_forest_s_fire,
-		plot_rss_seasonal_forest(rss_forest_s_fire, plot_theme())
+		plot_rss_seasonal_forest(rss_forest_s_fire, plot_theme(), "fire")
 	),
 	tar_target(
 		plot_rss_s_new_burn,
@@ -459,8 +461,242 @@ targets_rss_fire_seasonal <- c(
 	)
 )
 
+# Roads models!! Same as everything above, but let's do it all over again --------
+
+# Targets: annual road model ----------------------------------------------------------
+targets_road <- c(
+
+	tar_target(
+		road_model,
+		model_roads_bin(model_prep)
+	),
+	tar_target(
+		road_model_check,
+		model_check(road_model)
+	)
+)
+
+# Targets: seasonal road model ----------------------------------------
+targets_road_seasonal <- c(
+
+	tar_target(
+		s_road_model,
+		model_roads_bin(season_prep),
+		map(season_prep)
+	),
+	tar_target(
+		s_road_model_check,
+		model_check(s_road_model),
+		map(s_road_model)
+	)
+)
+
+# Targets: road output and effects ------------------------------------------------------------
+targets_road_effects <- c(
+	tar_target(
+		indiv_road,
+		indiv_estimates(road_model)
+	),
+	tar_target(
+		road_boxplot,
+		plot_box_horiz(indiv_road, plot_theme(), "road")
+	),
+	tar_target(
+		s_indiv_road,
+		indiv_seasonal(s_road_model, season_key),
+		pattern = map(s_road_model, season_key)
+	),
+	tar_target(
+		s_road_boxplot,
+		plot_boxplot_seasonal(s_indiv_road, plot_theme(), "road"),
+		pattern = map(s_indiv_road)
+	)
+)
+
+# Targets: speed from annual road model ------------------------------------------------------------
+targets_speed_road <- c(
+	tar_target(
+		prep_speed_road,
+		prepare_speed(
+			DT = model_prep,
+			summary = indiv_road,
+			model = "road",
+			params = dist_parameters
+		)
+	),
+	tar_target(
+		calc_speed_open_road,
+		calc_speed(prep_speed_road, 'open road', seq = 0:1)
+	),
+	tar_target(
+		plot_speed_open_road,
+		plot_box(calc_speed_open_road, plot_theme()) +
+			labs(x = 'Open', y = 'Speed (m/2hr)')
+	),
+	tar_target(
+		calc_speed_road,
+		calc_speed(prep_speed_road, 'dist_to_tch', seq(1, 20000, length.out = 100L))
+	),
+	tar_target(
+		plot_speed_road,
+		plot_dist(calc_speed_road, plot_theme()) +
+			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)')
+	),
+# ^ this looks like a bunch of horizontal lines... bc it is. the slopes are x10^-8, the differences between individuals just absolutely swamp any effects
+	tar_target(
+		road_plots,
+		save_plot(plot_speed_open_road, "road_model_speed_open",
+							plot_speed_road, "road_model_speed_tch")
+	)
+)
+
+# Targets: speed from seasonal roads --------------------------
+targets_speed_road_seasonal <- c(
+
+	tar_target(
+		prep_speed_s_road,
+		prepare_speed_seasonal(
+			DT = season_prep,
+			summary = s_indiv_road,
+			model = "road",
+			params = dist_parameters,
+			season_key = season_key
+		),
+		map(s_indiv_road, season_key)
+	),
+	tar_target(
+		calc_speed_open_s_road,
+		calc_speed_seasonal(prep_speed_s_road, 'open', "road", seq = 0:1, season_key),
+		map(prep_speed_s_road, season_key)
+	),
+	tar_target(
+		plot_speed_open_s_road,
+		plot_box_seasonal_speed(calc_speed_open_s_road, plot_theme(), "road")
+	),
+
+	tar_target(
+		calc_speed_s_road,
+		calc_speed_seasonal(prep_speed_s_road, 'dist_to_tch', "road", seq(1, 20000, length.out = 100L), season_key),
+		map(prep_speed_s_road, season_key)
+	),
+	tar_target(
+		plot_speed_s_road,
+		plot_dist_seasonal(calc_speed_s_road, plot_theme(), "road")
+	)
+)
 
 
+# Targets: RSS from annual road model -----------------------------------------------------------
+targets_rss_road <- c(
+	tar_target(
+		pred_h1_tch,
+		predict_h1_tch(model_prep, road_model)
+	),
+	tar_target(
+		pred_h1_minor,
+		predict_h1_minor(model_prep, road_model)
+	),
+	tar_target(
+		pred_h1_forest_road,
+		predict_h1_forest(model_prep, road_model, "road")
+	),
+	tar_target(
+		pred_h2_road,
+		predict_h2(model_prep, road_model, "road")
+	),
+	tar_target(
+		rss_forest_road,
+		calc_rss(pred_h1_forest_road, 'h1_forest', pred_h2_road, 'h2')
+	),
+	tar_target(
+		rss_tch,
+		calc_rss(pred_h1_tch, 'h1_tch', pred_h2_road, 'h2')
+	),
+	tar_target(
+		rss_minor,
+		calc_rss(pred_h1_minor, 'h1_minor', pred_h2_road, 'h2')
+	),
+	tar_target(
+		plot_rss_forest_road,
+		plot_rss(rss_forest_road, plot_theme()) +
+			labs(x = 'Forest', y = 'logRSS',
+					 title = 'RSS compared to 0 forest (road model)')
+	),
+	tar_target(
+		plot_rss_tch,
+		plot_rss(rss_tch, plot_theme()) +
+			labs(x = 'Distance to TCH (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance from TCH')
+	),
+	tar_target(
+		plot_rss_minor,
+		plot_rss(rss_minor, plot_theme()) +
+			labs(x = 'Distance to minor roads (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance from minor roads')
+	),
+	tar_target(
+		road_rss_plots,
+		save_rss_plot(plot_rss_forest_road, "rss_forest_road-model",
+									plot_rss_tch, "rss_dist_to_tch",
+									plot_rss_minor, "rss_dist_to_minor_roads")
+	)
+)
+
+
+# Targets: RSS from seasonal road model -----------------------------------------------------------
+targets_rss_road_seasonal <- c(
+
+	tar_target(
+		pred_h1_forest_s_road,
+		predict_h1_forest_seasonal(season_prep, s_road_model, "road", season_key),
+		pattern = map(s_road_model, season_prep, season_key)
+	),
+	tar_target(
+		pred_h1_s_tch,
+		predict_h1_tch_seasonal(season_prep, s_road_model, season_key),
+		pattern = map(season_prep, s_road_model, season_key)
+	),
+	tar_target(
+		pred_h1_s_minor,
+		predict_h1_minor_seasonal(season_prep, s_road_model, season_key),
+		pattern = map(season_prep, s_road_model, season_key)
+	),
+	tar_target(
+		pred_h2_s_road,
+		predict_h2_seasonal(season_prep, s_road_model, "road", season_key),
+		pattern = map(season_prep, s_road_model, season_key)
+	),
+
+	tar_target(
+		rss_forest_s_road,
+		calc_rss_seasonal(pred_h1_forest_s_road, 'h1_forest_s_road', pred_h2_s_road, 'h2_s_road', season_key),
+		map(pred_h1_forest_s_road, season_key)
+	),
+	tar_target(
+		rss_s_tch,
+		calc_rss_seasonal(pred_h1_s_tch, 'h1_tch_s', pred_h2_s_road, 'h2_s_road', season_key),
+		pattern = map(pred_h1_s_tch, season_key)
+	),
+	tar_target(
+		rss_s_minor,
+		calc_rss_seasonal(pred_h1_s_minor, 'h1_minor_s', pred_h2_s_road, 'h2_s_road', season_key),
+		pattern = map(pred_h1_s_minor, season_key)
+	),
+
+
+	tar_target(
+		plot_rss_forest_s_road,
+		plot_rss_seasonal_forest(rss_forest_s_road, plot_theme(), "road")
+	),
+	tar_target(
+		plot_rss_s_tch,
+		plot_rss_seasonal(rss_s_tch, plot_theme(), "TCH")
+	),
+	tar_target(
+		plot_rss_s_minor,
+		plot_rss_seasonal(rss_s_minor, plot_theme(), "minor roads")
+	)
+)
 
 # Targets: all ------------------------------------------------------------
 # Automatically grab and combine all the "targets_*" lists above

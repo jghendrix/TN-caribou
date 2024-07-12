@@ -8,14 +8,14 @@ predict_h1_new_burn_seasonal <- function(DT, model, season_key) {
 		sl_ = mean(sl_),
 		forest = 0,
 		open = 0,
-		dist_to_new_burn = seq(from = 0, to = 80000, length.out = N),
+		dist_to_new_burn = seq(from = 0, to = 20000, length.out = N),
 		dist_to_old_burn = median(dist_to_old_burn, na.rm = T),
 		indiv_step_id = NA
 	), by = id]
 
 	new_data[, h1_new_burn_s := predict(model, .SD, type = 'link', re.form = NULL)]
 
-	new_data[, x :=  seq(from = 0, to = 80000, length.out = N), by = id]
+	new_data[, x :=  seq(from = 0, to = 20000, length.out = N), by = id]
 
 	new_data[, season := season_key$season]
 }

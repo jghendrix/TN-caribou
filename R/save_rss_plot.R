@@ -1,25 +1,23 @@
-save_rss_plot <- function(plot_rss_forest,
-													plot_rss_old_burn,
-													plot_rss_new_burn)
+save_rss_plot <- function(A, nameA, B, nameB, C, nameC)
 
 {
 
-ggsave("graphics/rss_fire_forest.png",
-			 plot = plot_rss_forest,
+ggsave(paste0("graphics/",nameA, ".png"),
+			 plot = A,
 			 width = 2000,
 			 height = 1500,
 			 dpi = 320,
 			 units="px")
 
-ggsave("graphics/rss_fire_old_burn.png",
-			 plot = plot_rss_old_burn,
+ggsave(paste0("graphics/",nameB, ".png"),
+			 plot = B,
 			 width = 2000,
 			 height = 1500,
 			 dpi = 320,
 			 units="px")
 
-ggsave("graphics/rss_fire_new_burn.png",
-			 plot = plot_rss_new_burn,
+ggsave(paste0("graphics/",nameC, ".png"),
+			 plot = C,
 			 width = 2000,
 			 height = 1500,
 			 dpi = 320,

@@ -1,7 +1,7 @@
-#' @title Predict H1 trans canada for annual model
+#' @title Predict H1 trans canada seasonally
 #' @export
 #' @author Jack G Hendrix
-predict_h1_tch <- function(DT, model) {
+predict_h1_tch_seasonal <- function(DT, model, season_key) {
 	N <- 100L
 
 	new_data <- DT[, .(
@@ -17,4 +17,5 @@ predict_h1_tch <- function(DT, model) {
 
 	new_data[, x :=  seq(from = 0, to = 20000, length.out = N), by = id]
 
+	new_data[, season := season_key$season]
 }
