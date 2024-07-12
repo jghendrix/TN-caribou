@@ -3,20 +3,20 @@
 #' @author Jack G Hendrix
 calc_speed_seasonal <- function(DT, covariate, model, seq, season_key) {
 
-	if(covariate == "forest" & model == "roads")
+	if(covariate == "forest" & model == "road")
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest`*seq +
 																	`I(log(sl_)):open` +
-																	`I(log(dist_to_tch + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_tch + 1)):I(log(sl_))`*median
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]
 
-	if(covariate == "open" & model == "roads")
+	if(covariate == "open" & model == "road")
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`*seq +
-																	`I(log(dist_to_tch + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_tch + 1)):I(log(sl_))`*median
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]
@@ -25,7 +25,7 @@ calc_speed_seasonal <- function(DT, covariate, model, seq, season_key) {
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest`*seq +
 																	`I(log(sl_)):open` +
-																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]
@@ -34,7 +34,7 @@ calc_speed_seasonal <- function(DT, covariate, model, seq, season_key) {
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`*seq +
-																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]

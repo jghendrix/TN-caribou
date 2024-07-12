@@ -461,7 +461,7 @@ targets_rss_fire_seasonal <- c(
 	)
 )
 
-# Roads models!! Same as everything above, but let's do it all over again --------
+# Roads models: This is idential to everything above, but now running through an annual & seasonally-mapped model looking at distances to the Trans Canada and minor roads, instead of old & new burns --------
 
 # Targets: annual road model ----------------------------------------------------------
 targets_road <- c(
@@ -674,12 +674,12 @@ targets_rss_road_seasonal <- c(
 	),
 	tar_target(
 		rss_s_tch,
-		calc_rss_seasonal(pred_h1_s_tch, 'h1_tch_s', pred_h2_s_road, 'h2_s_road', season_key),
+		calc_rss_seasonal(pred_h1_s_tch, 'h1_tch', pred_h2_s_road, 'h2_s_road', season_key),
 		pattern = map(pred_h1_s_tch, season_key)
 	),
 	tar_target(
 		rss_s_minor,
-		calc_rss_seasonal(pred_h1_s_minor, 'h1_minor_s', pred_h2_s_road, 'h2_s_road', season_key),
+		calc_rss_seasonal(pred_h1_s_minor, 'h1_minor', pred_h2_s_road, 'h2_s_road', season_key),
 		pattern = map(pred_h1_s_minor, season_key)
 	),
 
