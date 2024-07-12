@@ -1,20 +1,19 @@
-#' @title Plot horizontal boxplots for roads model
+#' @title Plot seasonal boxplots for model estimates
 #' @export
 #' @author Jack G Hendrix
-plot_boxplot_roads <- function(DT, theme) {
+plot_boxplot_seasonal <- function(DT, theme, predictor) {
 
 	gbox <- ggplot(data = DT[term !='(Intercept)' & term != 'lc_adjother'],
-									# other landcover is all over the place, not possible to see the other effects
 									aes(term, estimate)) +
 		geom_boxplot(aes(color = term)) +
 		geom_jitter() +
 		geom_hline(yintercept = 0, lty = 'dashed') +
 		coord_flip() +
 		plot_theme() +
-		ggtitle(DT$season)
+		ggtitle(paste0(DT$season," ", predictor, " model"))
 
 	ggsave(
-		filename = paste0('graphics/roads_indiv_responses_', DT$season, '.png'),
+		filename = paste0('graphics/', predictor, '_indiv_responses_', DT$season, '.png'),
 		gbox,
 		width = 10,
 		height = 10,

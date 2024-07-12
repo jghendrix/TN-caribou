@@ -1,6 +1,6 @@
-#' @title Model fire
+#' @title Model of caribou responses to burns
 #' @export
-#' @author Julie W. Turner
+#' @author Jack G Hendrix
 model_fire_bin <- function(DT) {
 
 	glmmTMB(

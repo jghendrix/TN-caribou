@@ -1,6 +1,8 @@
 # === Targets: iSSA workflow ----------------------------------------------
-# Alec L. Robitaille, Julie W. Turner
-
+# Jack G Hendrix
+# 11 July
+# Trying to do a response-to-fire iSSA split by season
+# in the end, would like two parallel workflows, one looking at fire and one looking at roads, each of which with a total model and then one branched over season
 
 
 # Source ------------------------------------------------------------------
@@ -25,7 +27,7 @@ legend_path <- file.path('input', 'cfs_legend.csv')
 # nalcms_path <- file.path('input', '2024-03-12_NALCMS_30_m.tif')
 # nalcms_legend_path <- file.path('input', 'nalcms_legend.csv')
 
-# Path to burns
+# Path to burns and roads
 burn_path <- file.path('input', 'updated_fire.gpkg')
 road_path <- file.path('output', 'terra-nova-roads.gpkg')
 
@@ -77,18 +79,6 @@ targets_data <- c(
 		legend_path,
 		fread(!!.x)
 	),
-
-#	tar_file_read(
-#		nalcms_lc,
-#		nalcms_path,
-#		raster(!!.x)
-#	),
-
-#	tar_file_read(
-#		nalcms_legend,
-#		nalcms_legend_path,
-#		fread(!!.x)
-#	),
 
 	tar_file_read(
 		burn,
@@ -197,17 +187,7 @@ targets_extract <- c(
 	tar_target(
 		avail_lc,
 		calc_availability(tracks_w_both, 'lc_description', 'proportion', split_by)
-	)#,
-
-#	tar_target(
-#		burn_points,
-#		generate_burn_pts(burn_prep)
-#	),
-
-#	tar_target(
-#		extract_burn,
-#		extract_burn_lc(burn_points, crs, lc, legend)
-#	)
+	)
 )
 
 
@@ -233,11 +213,8 @@ targets_distributions <- c(
 	)
 )
 
-
-
-
-# Targets: fire model ----------------------------------------------------------
-targets_model <- c(
+# Targets: annual fire model ----------------------------------------------------------
+targets_fire <- c(
 	tar_target(
 		model_prep,
 		prepare_model(tracks_roads)
@@ -252,8 +229,8 @@ targets_model <- c(
 	)
 )
 
-# Targets: roads model ----------------------------------------
-targets_roads <- c(
+# Targets: seasonal fire model ----------------------------------------
+targets_fire_seasonal <- c(
 
 tar_target(
 	season_prep,
@@ -265,42 +242,41 @@ tar_target(
 	unique(season_prep[, .SD, .SDcols = c(seasonal_split, 'tar_group')])
 ),
 	tar_target(
-		roads_model,
-		model_roads_bin(season_prep),
+		s_fire_model,
+		model_fire_bin(season_prep),
 		map(season_prep)
 	),
 	tar_target(
-		roads_model_check,
-		model_check(roads_model),
-		map(roads_model)
+		s_fire_model_check,
+		model_check(s_fire_model),
+		map(s_fire_model)
 	)
 )
 
-# Targets: output and effects ------------------------------------------------------------
-targets_effects <- c(
+# Targets: fire output and effects ------------------------------------------------------------
+targets_fire_effects <- c(
 	tar_target(
 		indiv_fire,
 		indiv_estimates(fire_model)
 	),
 	tar_target(
 		fire_boxplot,
-		plot_box_horiz(indiv_fire, plot_theme())
-	),
-
-	tar_target(
-		indiv_roads,
-		indiv_seasonal(roads_model, season_key),
-		pattern = map(roads_model, season_key)
+		plot_box_horiz(indiv_fire, plot_theme(), "fire")
 	),
 	tar_target(
-		roads_boxplot,
-		plot_boxplot_roads(indiv_roads, plot_theme()),
-		pattern = map(indiv_roads)
+		s_indiv_fire,
+		indiv_seasonal(s_fire_model, season_key),
+		pattern = map(s_fire_model, season_key)
+	),
+	tar_target(
+		s_fire_boxplot,
+		plot_boxplot_seasonal(s_indiv_fire, plot_theme(), "fire"),
+		pattern = map(s_indiv_fire)
 	)
 )
 
-# Targets: speed from fire ------------------------------------------------------------
-targets_speed_f <- c(
+# Targets: speed from annual fire ------------------------------------------------------------
+targets_speed_fire <- c(
 	tar_target(
 		prep_speed_fire,
 		prepare_speed(
@@ -326,47 +302,53 @@ targets_speed_f <- c(
 		plot_speed_burn,
 		plot_dist(calc_speed_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'Speed (m/2hr)')
+	),
+
+	tar_target(
+		fire_plots,
+		save_plot(plot_speed_open_fire, "fire_model_speed_open",
+							plot_speed_burn, "fire_model_speed_burn")
 	)
 )
 
-# Targets: speed from roads --------------------------
-targets_speed_r <- c(
+# Targets: speed from seasonal fire --------------------------
+targets_speed_fire_seasonal <- c(
 
 	tar_target(
-		prep_speed_roads,
+		prep_speed_s_fire,
 		prepare_speed_seasonal(
 			DT = season_prep,
-			summary = indiv_roads,
+			summary = s_indiv_fire,
 			params = dist_parameters,
 			season_key = season_key
 		),
-		map(indiv_roads, season_key)
+		map(s_indiv_fire, season_key)
 	),
 	tar_target(
-		calc_speed_open_roads,
-		calc_speed_road(prep_speed_roads, 'open', seq = 0:1, season_key),
-		map(prep_speed_roads, season_key)
+		calc_speed_open_s_fire,
+		calc_speed_seasonal(prep_speed_s_fire, 'open', "fire", seq = 0:1, season_key),
+		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
-		plot_speed_open_roads,
-		plot_box_roads_speed(calc_speed_open_roads, plot_theme())
+		plot_speed_open_s_fire,
+		plot_box_seasonal_speed(calc_speed_open_s_fire, plot_theme(), "fire")
 	),
-	# ^ does response to open vs. closed vary between our fire model and roads model? theoretically it shouldn't matter much
 
 	tar_target(
-		calc_speed_roads,
-		calc_speed_road(prep_speed_roads, 'dist_to_tch', seq(1, 60000, length.out = 100L), season_key),
-		map(prep_speed_roads, season_key)
+		calc_speed_s_fire,
+		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 80000, length.out = 100L), season_key),
+		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
-		plot_speed_roads,
-		plot_dist_seasonal(calc_speed_roads, plot_theme())
+		plot_speed_s_fire,
+		plot_dist_seasonal(calc_speed_s_fire, plot_theme(), "fire")
 	)
 )
-## ^ these seasonal plots look like garbage? but maybe that's what they're meant to look like?
 
 
-# Targets: RSS from fire model -----------------------------------------------------------
+## There is something funky going on with the speed estimates... not sure if that is indicative of an issue with the model itself? ----
+
+# Targets: RSS from annual fire model -----------------------------------------------------------
 targets_rss <- c(
 	tar_target(
 		pred_h1_new_burn,
@@ -381,11 +363,11 @@ targets_rss <- c(
 		predict_h1_forest(model_prep, fire_model)
 	),
 	tar_target(
-		pred_h2,
+		pred_h2_fire,
 		predict_h2(model_prep, fire_model)
 	),
 	tar_target(
-		rss_forest,
+		rss_forest_fire,
 		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
 	),
 	tar_target(
@@ -398,7 +380,7 @@ targets_rss <- c(
 	),
 	tar_target(
 		plot_rss_forest_fire,
-		plot_rss(rss_forest, plot_theme()) +
+		plot_rss(rss_forest_fire, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
 					 title = 'RSS compared to 0 forest (fire model)')
 	),
@@ -415,14 +397,14 @@ targets_rss <- c(
 				 title = 'RSS compared to median distance from pre-1992 burns')
 	),
 	tar_target(
-		rss_plots,
+		fire_rss_plots,
 		save_rss_plot(plot_rss_forest_fire,
 									plot_rss_old_burn,
 									plot_rss_new_burn)
 	)
 )
 
-	# Targets: RSS from road model -----------------------------------------------------------
+# Targets: RSS from seasonal fire model -----------------------------------------------------------
 	targets_rss_roads <- c(
 	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
 
@@ -477,6 +459,7 @@ targets_rss <- c(
 		plot_rss_seasonal_minor(rss_minor, plot_theme())
 	)
 )
+
 
 
 

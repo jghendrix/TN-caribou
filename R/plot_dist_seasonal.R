@@ -1,7 +1,7 @@
 #' @title Plot distribution seasonally
 #' @export
 #' @author Jack G. Hendrix
-plot_dist_seasonal <- function(DT, theme) {
+plot_dist_seasonal <- function(DT, theme, predictor) {
 
 	DT %<>% mutate(s_code = ifelse(season == "winter", 1, 2),
 								 s_code = ifelse(season == "calving", 3, s_code),
@@ -19,7 +19,7 @@ plot_dist_seasonal <- function(DT, theme) {
 		ggtitle(subset(DT, s_code == i)$season)
 
 	ggsave(
-		filename = paste0('graphics/speed_by_tch_', i, '.png'),
+		filename = paste0('graphics/speed_by_', predictor, "_", i, '.png'),
 		g,
 		width = 10,
 		height = 10,
