@@ -23,10 +23,6 @@ locs_path <- file.path('input', 'TNNP_ALL_Caribou.csv')
 lc_path <- file.path('input/lc', '2024-04-24_Hermosilla_2019_land_cover.tif')
 legend_path <- file.path('input', 'cfs_legend.csv')
 
-# Alternative landcover from NALCMS, but CFS is better I think
-# nalcms_path <- file.path('input', '2024-03-12_NALCMS_30_m.tif')
-# nalcms_legend_path <- file.path('input', 'nalcms_legend.csv')
-
 # Path to burns and roads
 burn_path <- file.path('input', 'updated_fire.gpkg')
 road_path <- file.path('output', 'terra-nova-roads.gpkg')
