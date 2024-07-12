@@ -1,4 +1,4 @@
-#' @title Predict H1 trans canada
+#' @title Predict H1 trans canada seasonally
 #' @export
 #' @author Jack G Hendrix
 predict_h1_tch <- function(DT, model, season_key) {

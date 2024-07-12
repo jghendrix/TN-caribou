@@ -1,7 +1,9 @@
-#' @title Plot RSS_seasonally for minor roads
+#' @title Plot RSS seasonally
 #' @export
-#' @author Julie W. Turner, Alec L. Robitaille
-plot_rss_seasonal_minor <- function(rss, theme) {
+#' @author Jack G Hendrix
+plot_rss_seasonal <- function(rss, theme, axis) {
+
+# axis = the predictor variable of interest
 
 	rss %<>% mutate(s_code = ifelse(season == "winter", 1, 2),
 								 s_code = ifelse(season == "calving", 3, s_code),
@@ -11,7 +13,7 @@ plot_rss_seasonal_minor <- function(rss, theme) {
 		data <- subset(rss, s_code == i)
 
 ggplot(data, aes(x, rss)) +
-		geom_line(aes(group = id , alpha = .0001),
+		geom_line(aes(group = id, colour = id, alpha = .0001),
 							linetype = 'twodash',
 							show.legend = F) +
 		geom_smooth(size = 1.5) +
@@ -19,17 +21,17 @@ ggplot(data, aes(x, rss)) +
 			yintercept = 0,
 			colour = "black",
 			lty = 2,
-			size = .7
-		) +
-		scale_color_colorblind()  +
-		scale_fill_colorblind() +
-		#scale_x_continuous(limits = c(0, 5000)) +
+			linewidth = .7) +
+		scale_color_viridis(discrete = TRUE)  +
+		scale_fill_viridis() +
+	# the responses vary wildly in scale, does setting a fixed y-axis help compare across seasons?
+		#scale_y_continuous(limits = c(-3, 3)) +
 		plot_theme() +
-		labs(x = 'Distance to minor roads (m)', y = 'logRSS') +
-		ggtitle(paste0('RSS compared to median distance to minor roads - ', data$season))
+		labs(x = paste0('Distance to ', axis, ' (m)'), y = 'logRSS') +
+		ggtitle(paste0('RSS compared to median distance to ', axis, ' - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_minor_tch', i, '.png'),
+	filename = paste0('graphics/rss_', axis, '-', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320

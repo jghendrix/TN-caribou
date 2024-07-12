@@ -368,15 +368,15 @@ targets_rss <- c(
 	),
 	tar_target(
 		rss_forest_fire,
-		calc_rss(pred_h1_forest, 'h1_forest', pred_h2, 'h2')
+		calc_rss(pred_h1_forest, 'h1_forest', pred_h2_fire, 'h2')
 	),
 	tar_target(
 		rss_old_burn,
-		calc_rss(pred_h1_old_burn, 'h1_old_burn', pred_h2, 'h2')
+		calc_rss(pred_h1_old_burn, 'h1_old_burn', pred_h2_fire, 'h2')
 	),
 	tar_target(
 		rss_new_burn,
-		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2, 'h2')
+		calc_rss(pred_h1_new_burn, 'h1_new_burn', pred_h2_fire, 'h2')
 	),
 	tar_target(
 		plot_rss_forest_fire,
@@ -405,58 +405,57 @@ targets_rss <- c(
 )
 
 # Targets: RSS from seasonal fire model -----------------------------------------------------------
-	targets_rss_roads <- c(
-	# Ideally I would like to have a four-panel figure looking at RSS of distance to the highway (tch) and distance to minor roads, separating out the four seasons
+targets_rss_fire_seasonal <- c(
 
 	tar_target(
-		pred_h1_forest_roads,
-		predict_h1_forest_roads(season_prep, roads_model, season_key),
-		pattern = map(season_prep, roads_model, season_key)
+		pred_h1_forest_s_fire,
+		predict_h1_forest_seasonal(season_prep, s_fire_model, "fire", season_key),
+		pattern = map(s_fire_model, season_prep, season_key)
 	),
 	tar_target(
-		pred_h1_tch,
-		predict_h1_tch(season_prep, roads_model, season_key),
-		pattern = map(season_prep, roads_model, season_key)
+		pred_h1_s_new_burn,
+		predict_h1_new_burn_seasonal(season_prep, s_fire_model, season_key),
+		pattern = map(season_prep, s_fire_model, season_key)
 	),
 	tar_target(
-		pred_h1_minor,
-		predict_h1_minor(season_prep, roads_model, season_key),
-		pattern = map(season_prep, roads_model, season_key)
+		pred_h1_s_old_burn,
+		predict_h1_old_burn_seasonal(season_prep, s_fire_model, season_key),
+		pattern = map(season_prep, s_fire_model, season_key)
 	),
 	tar_target(
-		pred_h2_roads,
-		predict_h2_roads(season_prep, roads_model, season_key),
-		pattern = map(season_prep, roads_model, season_key)
-	),
-
-	tar_target(
-		rss_forest_roads,
-		calc_rss_seasonal(pred_h1_forest_roads, 'h1_forest_roads', pred_h2_roads, 'h2_roads', season_key),
-		map(pred_h1_forest_roads, season_key)
+		pred_h2_s_fire,
+		predict_h2_seasonal(season_prep, s_fire_model, "fire", season_key),
+		pattern = map(season_prep, s_fire_model, season_key)
 	),
 
 	tar_target(
-		rss_tch,
-		calc_rss_seasonal(pred_h1_tch, 'h1_tch', pred_h2_roads, 'h2_roads', season_key),
-		pattern = map(pred_h1_tch, season_key)
+		rss_forest_s_fire,
+		calc_rss_seasonal(pred_h1_forest_s_fire, 'h1_forest_s_fire', pred_h2_s_fire, 'h2_s_fire', season_key),
+		map(pred_h1_forest_s_fire, season_key)
 	),
 	tar_target(
-		rss_minor,
-		calc_rss_seasonal(pred_h1_minor, 'h1_minor', pred_h2_roads, 'h2_roads', season_key),
-		pattern = map(pred_h1_minor, season_key)
+		rss_s_new_burn,
+		calc_rss_seasonal(pred_h1_s_new_burn, 'h1_new_burn_s', pred_h2_s_fire, 'h2_s_fire', season_key),
+		pattern = map(pred_h1_s_new_burn, season_key)
+	),
+	tar_target(
+		rss_s_old_burn,
+		calc_rss_seasonal(pred_h1_s_old_burn, 'h1_old_burn_s', pred_h2_s_fire, 'h2_s_fire', season_key),
+		pattern = map(pred_h1_s_old_burn, season_key)
 	),
 
+
 	tar_target(
-		plot_rss_forest_roads,
-		plot_rss_seasonal_forest(rss_forest_roads, plot_theme())
+		plot_rss_forest_s_fire,
+		plot_rss_seasonal_forest(rss_forest_s_fire, plot_theme())
 	),
 	tar_target(
-		plot_rss_tch,
-		plot_rss_seasonal_tch(rss_tch, plot_theme())
+		plot_rss_s_new_burn,
+		plot_rss_seasonal(rss_s_new_burn, plot_theme(), "new burns")
 	),
 	tar_target(
-		plot_rss_minor,
-		plot_rss_seasonal_minor(rss_minor, plot_theme())
+		plot_rss_s_old_burn,
+		plot_rss_seasonal(rss_s_old_burn, plot_theme(), "old burns")
 	)
 )
 
