@@ -6,7 +6,8 @@ plot_box_horiz <- function(DT, theme, predictor) {
 gbox <- 	ggplot(data = DT[term !='(Intercept)' & term != 'lc_adjother'],
 				 # other landcover is all over the place, not possible to see the other effects
 				 aes(term, estimate)) +
-		geom_boxplot(aes(color = term)) +
+		geom_boxplot(aes(color = term),
+								 show.legend = FALSE) +
 		geom_jitter() +
 		geom_hline(yintercept = 0, lty = 'dashed') +
 		coord_flip() +

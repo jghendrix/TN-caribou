@@ -284,7 +284,7 @@ targets_speed_fire <- c(
 	),
 	tar_target(
 		calc_speed_open_fire,
-		calc_speed(prep_speed_fire, 'open', seq = 0:1)
+		calc_speed(prep_speed_fire, 'open fire', seq = 0:1)
 	),
 	tar_target(
 		plot_speed_open_fire,
@@ -292,19 +292,28 @@ targets_speed_fire <- c(
 			labs(x = 'Open', y = 'Speed (m/2hr)')
 	),
 	tar_target(
-		calc_speed_burn,
+		calc_speed_new_burn,
 		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 20000, length.out = 100L))
 	),
 	tar_target(
-		plot_speed_burn,
-		plot_dist(calc_speed_burn, plot_theme()) +
+		plot_speed_new_burn,
+		plot_dist(calc_speed_new_burn, plot_theme()) +
 			labs(x = 'Distance to new burn (m)', y = 'Speed (m/2hr)')
 	),
-
+	tar_target(
+		calc_speed_old_burn,
+		calc_speed(prep_speed_fire, 'dist_to_old_burn', seq(1, 20000, length.out = 100L))
+	),
+	tar_target(
+		plot_speed_old_burn,
+		plot_dist(calc_speed_old_burn, plot_theme()) +
+			labs(x = 'Distance to old burn (m)', y = 'Speed (m/2hr)')
+	),
 	tar_target(
 		fire_plots,
 		save_plot(plot_speed_open_fire, "fire_model_speed_open",
-							plot_speed_burn, "fire_model_speed_burn")
+							plot_speed_new_burn, "fire_model_speed_new_burn",
+							plot_speed_old_burn, "fire_model_speed_old_burn")
 	)
 )
 
@@ -333,13 +342,23 @@ targets_speed_fire_seasonal <- c(
 	),
 
 	tar_target(
-		calc_speed_s_fire,
+		calc_speed_s_new_fire,
 		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 20000, length.out = 100L), season_key),
 		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
-		plot_speed_s_fire,
-		plot_dist_seasonal(calc_speed_s_fire, plot_theme(), "fire")
+		plot_speed_s_new_fire,
+		plot_dist_seasonal(calc_speed_s_new_fire, plot_theme(), "new burn")
+	),
+
+	tar_target(
+		calc_speed_s_old_fire,
+		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_old_burn', "fire", seq(1, 20000, length.out = 100L), season_key),
+		map(prep_speed_s_fire, season_key)
+	),
+	tar_target(
+		plot_speed_s_old_fire,
+		plot_dist_seasonal(calc_speed_s_old_fire, plot_theme(), "old burn")
 	)
 )
 

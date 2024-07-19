@@ -4,8 +4,8 @@
 plot_rss <- function(rss, theme) {
 ggplot(data = rss, aes(x, rss)) +
 		geom_line(aes(group = id, colour = id, alpha = .0001),
-							linetype = 'twodash',
-							show.legend = F) +
+							linetype = 'twodash', show.legend = F
+							)+
 		geom_smooth(size = 1.5) +
 		geom_hline(
 			yintercept = 0,

@@ -1,4 +1,4 @@
-save_plot <- function(plot_a, name_a, plot_b, name_b)
+save_plot <- function(plot_a, name_a, plot_b, name_b, plot_c, name_c)
 
 {
 
@@ -16,4 +16,10 @@ save_plot <- function(plot_a, name_a, plot_b, name_b)
 				 dpi = 320,
 				 units="px")
 
+	ggsave(paste0("graphics/", name_c, ".png"),
+				 plot = plot_c,
+				 width = 2000,
+				 height = 1500,
+				 dpi = 320,
+				 units="px")
 }

@@ -5,7 +5,8 @@ plot_boxplot_seasonal <- function(DT, theme, predictor) {
 
 	gbox <- ggplot(data = DT[term !='(Intercept)' & term != 'lc_adjother'],
 									aes(term, estimate)) +
-		geom_boxplot(aes(color = term)) +
+		geom_boxplot(aes(color = term),
+								  show.legend = FALSE) +
 		geom_jitter() +
 		geom_hline(yintercept = 0, lty = 'dashed') +
 		coord_flip() +
