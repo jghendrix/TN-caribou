@@ -3,7 +3,7 @@ _targets/
 raw-data/
 example_code.R
 Rplots.pdf
-
+graphics/
 ## Mac
 .DS_Store
 

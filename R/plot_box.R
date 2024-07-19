@@ -4,9 +4,11 @@
 plot_box <- function(DT, theme) {
 
 	ggplot(data = DT,
-				 aes(as.factor(x), spd)) +
-		geom_boxplot(aes(color = as.factor(x))) +
-		geom_jitter(aes(color = as.factor(x))) +
+				 aes(as.logical(x), spd)) +
+		geom_boxplot(aes(color = as.factor(x)),
+								 show.legend = F) +
+		geom_jitter(aes(color = as.factor(x)),
+								show.legend = F) +
 		scale_color_colorblind()  +
 		scale_fill_colorblind() +
 		plot_theme()

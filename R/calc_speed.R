@@ -6,15 +6,23 @@ calc_speed <- function(DT, covariate, seq) {
 	DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																			`I(log(sl_)):forest`*seq +
 																			`I(log(sl_)):open` +
-																			`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
+																			`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median
 															)*(scale))),
 									 x = list(list(seq))),
 					 by=.(id)]
-	if(covariate == "open")
+	if(covariate == "open fire")
 		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`*seq +
-																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median.burn
+																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*median
+		)*(scale))),
+		x = list(list(seq))),
+		by=.(id)]
+	if(covariate == "open road")
+		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
+																	`I(log(sl_)):forest` +
+																	`I(log(sl_)):open`*seq +
+																	`I(log(dist_to_tch + 1)):I(log(sl_))`*median
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]
@@ -23,6 +31,14 @@ calc_speed <- function(DT, covariate, seq) {
 																	`I(log(sl_)):forest` +
 																	`I(log(sl_)):open`+
 																	`I(log(dist_to_new_burn + 1)):I(log(sl_))`*seq
+		)*(scale))),
+		x = list(list(seq))),
+		by=.(id)]
+	if(covariate == "dist_to_old_burn")
+		DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
+																	`I(log(sl_)):forest` +
+																	`I(log(sl_)):open`+
+																	`I(log(dist_to_old_burn + 1)):I(log(sl_))`*seq
 		)*(scale))),
 		x = list(list(seq))),
 		by=.(id)]

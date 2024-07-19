@@ -1,7 +1,7 @@
-#' @title Plot RSS_seasonally for forest cover
+#' @title Plot RSS seasonally for forest cover
 #' @export
-#' @author Julie W. Turner, Alec L. Robitaille
-plot_rss_seasonal_forest <- function(rss, theme) {
+#' @author Jack G Hendrix
+plot_rss_seasonal_forest <- function(rss, theme, predictor) {
 
 	rss %<>% mutate(s_code = ifelse(season == "winter", 1, 2),
 								 s_code = ifelse(season == "calving", 3, s_code),
@@ -26,10 +26,10 @@ ggplot(data, aes(x, rss)) +
 		#scale_x_continuous(limits = c(0, 5000)) +
 		plot_theme() +
 		labs(x = 'Forest', y = 'logRSS') +
-		ggtitle(paste0('RSS compared to 0 forest - ', data$season))
+		ggtitle(paste0(predictor, ' model - RSS compared to 0 forest - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_forest_', i, '.png'),
+	filename = paste0('graphics/rss_forest_', predictor, '_', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320
