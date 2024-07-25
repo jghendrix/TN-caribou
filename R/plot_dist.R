@@ -4,9 +4,9 @@
 plot_dist <- function(DT, theme) {
 
 	ggplot(data = DT,
-				 aes(x, spd)) +
-		geom_point(alpha = 0.2) +
-		scale_color_colorblind()  +
-		scale_fill_colorblind() +
+				 aes(x, spd, colour = id)) +
+		geom_point(alpha = 0.5,
+							 show.legend = F) +
+		scale_colour_viridis(discrete = TRUE) +
 		plot_theme()
 }

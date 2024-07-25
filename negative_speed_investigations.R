@@ -39,9 +39,36 @@ ggplot(subset(steps, season == "winter"), aes(x = Animal_ID, y = sl_)) +
 
 # Ok so the animals that go into negative speeds might be slightly less fast?? It's not a huge difference tho tbh
 
+# Distance to new burn predicted values?
+calc_speed <- function(DT, covariate, seq) {
+if(covariate == "dist_to_new_burn")
+	DT[, `:=` (spd = list(list((shape +`I(log(sl_))` +
+																`I(log(sl_)):forest` +
+																`I(log(sl_)):open`+
+																`I(log(dist_to_new_burn + 1)):I(log(sl_))
+															`*seq
+	)*(scale))),
+	x = list(list(seq))),
+	by=.(id)]
+}
+tar_load(prep_speed_fire)
+# some of these estimates are negative... should they be?
+# the indivs that go below 0 are the ones with negative slopes for new_burn:sl
+# they're all negative for sl though
+# and all positive (and identical) for sl:new_burn? Why are there reciprocal interactions? And why do we use one and not the other
 
+# what do actual step lengths in response to dist_to_new_burn look like?
+ggplot(steps, aes(x = dist_to_new_burn, y = sl_, colour = Animal_ID)) +
+	geom_point(alpha = 0.3) +
+	geom_smooth() +
+	coord_cartesian(xlim = c(0, 5000),
+									ylim = c(0, 2000))
 
+# it is a negative trend. Just not sure how to get it to curve down to zero and not surpass it?
 
+# there are points >80km away, but we're omitting all those right?
+
+## Mapping/distance-to-feature exploration ----
 
 points <- season_prep %>% filter(case_ == TRUE)
 coords <- SpatialPoints(data.frame(points[, c("x1_","y1_")]),

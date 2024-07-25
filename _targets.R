@@ -293,7 +293,7 @@ targets_speed_fire <- c(
 	),
 	tar_target(
 		calc_speed_new_burn,
-		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 20000, length.out = 100L))
+		calc_speed(prep_speed_fire, 'dist_to_new_burn', seq(1, 5000, length.out = 100L))
 	),
 	tar_target(
 		plot_speed_new_burn,
@@ -302,7 +302,7 @@ targets_speed_fire <- c(
 	),
 	tar_target(
 		calc_speed_old_burn,
-		calc_speed(prep_speed_fire, 'dist_to_old_burn', seq(1, 20000, length.out = 100L))
+		calc_speed(prep_speed_fire, 'dist_to_old_burn', seq(1, 5000, length.out = 100L))
 	),
 	tar_target(
 		plot_speed_old_burn,
