@@ -29,7 +29,7 @@ ggplot(data, aes(x, rss)) +
 		ggtitle(paste0(predictor, ' model - RSS compared to 0 forest - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_forest_', predictor, '_', i, '.png'),
+	filename = paste0('graphics/rss/rss_forest_', predictor, '_', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320

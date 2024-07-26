@@ -343,7 +343,7 @@ targets_speed_fire_seasonal <- c(
 
 	tar_target(
 		calc_speed_s_new_fire,
-		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 20000, length.out = 100L), season_key),
+		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_new_burn', "fire", seq(1, 5000, length.out = 100L), season_key),
 		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
@@ -353,7 +353,7 @@ targets_speed_fire_seasonal <- c(
 
 	tar_target(
 		calc_speed_s_old_fire,
-		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_old_burn', "fire", seq(1, 20000, length.out = 100L), season_key),
+		calc_speed_seasonal(prep_speed_s_fire, 'dist_to_old_burn', "fire", seq(1, 5000, length.out = 100L), season_key),
 		map(prep_speed_s_fire, season_key)
 	),
 	tar_target(
@@ -361,9 +361,6 @@ targets_speed_fire_seasonal <- c(
 		plot_dist_seasonal(calc_speed_s_old_fire, plot_theme(), "old burn")
 	)
 )
-
-
-## There is something funky going on with the speed estimates... not sure if that is indicative of an issue with the model itself? ----
 
 # Targets: RSS from annual fire model -----------------------------------------------------------
 targets_rss_fire <- c(
@@ -549,19 +546,29 @@ targets_speed_road <- c(
 			labs(x = 'Open', y = 'Speed (m/2hr)')
 	),
 	tar_target(
-		calc_speed_road,
-		calc_speed(prep_speed_road, 'dist_to_tch', seq(1, 20000, length.out = 100L))
+		calc_speed_tch,
+		calc_speed(prep_speed_road, 'dist_to_tch', seq(1, 50000, length.out = 100L))
 	),
 	tar_target(
-		plot_speed_road,
-		plot_dist(calc_speed_road, plot_theme()) +
+		plot_speed_tch,
+		plot_dist(calc_speed_tch, plot_theme()) +
 			labs(x = 'Distance to TCH (m)', y = 'Speed (m/2hr)')
 	),
-# ^ this looks like a bunch of horizontal lines... bc it is. the slopes are x10^-8, the differences between individuals just absolutely swamp any effects
+
+	tar_target(
+		calc_speed_minor,
+		calc_speed(prep_speed_road, 'dist_to_minor', seq(1, 50000, length.out = 100L))
+	),
+	tar_target(
+		plot_speed_minor,
+		plot_dist(calc_speed_minor, plot_theme()) +
+			labs(x = 'Distance to minor roads (m)', y = 'Speed (m/2hr)')
+	),
 	tar_target(
 		road_plots,
 		save_plot(plot_speed_open_road, "road_model_speed_open",
-							plot_speed_road, "road_model_speed_tch")
+							plot_speed_tch, "road_model_speed_tch",
+							plot_speed_minor, "road_model_speed_minor")
 	)
 )
 
@@ -590,13 +597,22 @@ targets_speed_road_seasonal <- c(
 	),
 
 	tar_target(
-		calc_speed_s_road,
-		calc_speed_seasonal(prep_speed_s_road, 'dist_to_tch', "road", seq(1, 20000, length.out = 100L), season_key),
+		calc_speed_s_tch,
+		calc_speed_seasonal(prep_speed_s_road, 'dist_to_tch', "road", seq(1, 5000, length.out = 100L), season_key),
 		map(prep_speed_s_road, season_key)
 	),
 	tar_target(
-		plot_speed_s_road,
-		plot_dist_seasonal(calc_speed_s_road, plot_theme(), "road")
+		plot_speed_s_tch,
+		plot_dist_seasonal(calc_speed_s_tch, plot_theme(), "tch")
+	),
+	tar_target(
+		calc_speed_s_minor,
+		calc_speed_seasonal(prep_speed_s_road, 'dist_to_minor', "road", seq(1, 5000, length.out = 100L), season_key),
+		map(prep_speed_s_road, season_key)
+	),
+	tar_target(
+		plot_speed_s_minor,
+		plot_dist_seasonal(calc_speed_s_minor, plot_theme(), "minor road")
 	)
 )
 

@@ -21,7 +21,7 @@ plot_box_seasonal_speed <- function(DT, theme, predictor) {
 		ggtitle(subset(DT, s_code == i)$season)
 
 	ggsave(
-		filename = paste0('graphics/', predictor, 'speed_in_open_', i, '.png'),
+		filename = paste0('graphics/speed/', predictor, 'speed_in_open_', i, '.png'),
 		gbox,
 		width = 10,
 		height = 10,

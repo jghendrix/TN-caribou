@@ -3,16 +3,19 @@
 #' @author Jack G Hendrix
 prepare_speed_seasonal <- function(DT, summary, model, params, season_key) {
 
+
 	if(model == "fire")
-	sum <- DT[,.(mean = mean(dist_to_new_burn, na.rm = T),
-											  median = median(dist_to_new_burn, na.rm = T),
-											  max = max(dist_to_new_burn, na.rm = T)),
-															by = .(id)]
+		sum <- DT[,.(med_new = median(dist_to_new_burn, na.rm = T),
+								 med_old = median(dist_to_old_burn, na.rm = T),
+								 mean_forest = mean(forest, na.rm = T),
+								 mean_open = mean(open, na.rm = T)),
+							by = .(id)]
 
 	if(model == "road")
-		sum <- DT[,.(mean = mean(dist_to_tch, na.rm = T),
-								 median = median(dist_to_tch, na.rm = T),
-								 max = max(dist_to_tch, na.rm = T)),
+		sum <- DT[,.(med_minor = median(dist_to_minor, na.rm = T),
+								 med_tch = median(dist_to_tch, na.rm = T),
+								 mean_forest = mean(forest, na.rm = T),
+								 mean_open = mean(open, na.rm = T)),
 							by = .(id)]
 
 	dat.wide <- dcast(summary[term %like% 'sl'], id~ term, value.var = 'estimate')

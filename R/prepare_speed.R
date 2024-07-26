@@ -13,7 +13,7 @@ sum <- DT[,.(med_new = median(dist_to_new_burn, na.rm = T),
 # haven't messed with the road one yet
 
 if(model == "road")
-	sum <- DT[,.(med_minor = median(dist_to_minorn, na.rm = T),
+	sum <- DT[,.(med_minor = median(dist_to_minor, na.rm = T),
 							 med_tch = median(dist_to_tch, na.rm = T),
 							 mean_forest = mean(forest, na.rm = T),
 							 mean_open = mean(open, na.rm = T)),

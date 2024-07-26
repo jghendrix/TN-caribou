@@ -31,7 +31,7 @@ ggplot(data, aes(x, rss)) +
 		ggtitle(paste0('RSS compared to median distance to ', axis, ' - ', data$season))
 
 ggsave(
-	filename = paste0('graphics/rss_', axis, '-', i, '.png'),
+	filename = paste0('graphics/rss/rss_', axis, '-', i, '.png'),
 	width = 10,
 	height = 10,
 	dpi = 320
