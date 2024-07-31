@@ -20,6 +20,7 @@ library(ggplot2)
 library(ggthemes)
 
 library(distanceto)
+library(spatsoc)
 
 library(glmmTMB)
 require(broom.mixed)

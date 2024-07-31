@@ -98,9 +98,15 @@ targets_prep <- c(
 		prepare_locs(locs_raw, id_col, datetime_col, tz, x_col, y_col, split_by),
 		iteration = 'group'
 	),
+
+	tar_target(
+		locs_nn,
+		nn(locs_prep)
+	),
+
 	tar_target(
 		split_key,
-		unique(locs_prep[, .SD, .SDcols = c(split_by, 'tar_group')])
+		unique(locs_nn[, .SD, .SDcols = c(split_by, 'tar_group')])
 	),
 	tar_target(
 		burn_prep,
@@ -122,9 +128,9 @@ targets_prep <- c(
 targets_tracks <- c(
 	tar_target(
 		tracks,
-		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
+		make_track(locs_nn, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
 			transform_coords(crs_to = crs),
-		pattern = map(locs_prep)
+		pattern = map(locs_nn)
 	),
 	tar_target(
 		tracks_resampled,
