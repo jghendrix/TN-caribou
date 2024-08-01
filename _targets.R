@@ -764,6 +764,123 @@ targets_social_effects <- c(
 	)
 )
 
+# Targets: RSS from social fire model -----------------------------------------------------------
+targets_rss_social <- c(
+	tar_target(
+		pred_h1_forest_dyad,
+		predict_h1_forest(subset(model_prep, season == "winter"),
+											social_model, "dyad")
+	),
+tar_target(
+	pred_h1_forest_alone,
+	predict_h1_forest(subset(model_prep, season == "winter"),
+										social_model, "alone")
+),
+
+
+tar_target(
+	pred_h1_new_burn_alone,
+	predict_h1_new_burn_social(subset(model_prep, season == "winter"),
+										social_model, "alone")
+),
+tar_target(
+	pred_h1_new_burn_dyad,
+	predict_h1_new_burn_social(subset(model_prep, season == "winter"),
+														 social_model, "dyad")
+),
+
+tar_target(
+	pred_h1_old_burn_alone,
+	predict_h1_old_burn_social(subset(model_prep, season == "winter"),
+														 social_model, "alone")
+),
+tar_target(
+	pred_h1_old_burn_dyad,
+	predict_h1_old_burn_social(subset(model_prep, season == "winter"),
+														 social_model, "dyad")
+),
+
+
+tar_target(
+	pred_h2_dyad,
+	predict_h2(subset(model_prep, season == "winter"),
+						 social_model, "dyad")
+),
+tar_target(
+	pred_h2_alone,
+	predict_h2(subset(model_prep, season == "winter"),
+						 social_model, "alone")
+),
+
+	tar_target(
+		rss_forest_dyad,
+		calc_rss(pred_h1_forest_dyad, 'h1_forest', pred_h2_dyad, 'h2')
+	),
+	tar_target(
+		rss_forest_alone,
+		calc_rss(pred_h1_forest_alone, 'h1_forest', pred_h2_alone, 'h2')
+	),
+	tar_target(
+		rss_forest_social,
+		join_rss(rss_forest_alone, rss_forest_dyad)
+	),
+
+
+tar_target(
+	rss_new_burn_dyad,
+	calc_rss(pred_h1_new_burn_dyad, 'h1_new_burn', pred_h2_dyad, 'h2')
+),
+tar_target(
+	rss_new_burn_alone,
+	calc_rss(pred_h1_new_burn_alone, 'h1_new_burn', pred_h2_alone, 'h2')
+),
+tar_target(
+	rss_new_burn_social,
+	join_rss(rss_new_burn_alone, rss_new_burn_dyad)
+),
+
+tar_target(
+	rss_old_burn_dyad,
+	calc_rss(pred_h1_old_burn_dyad, 'h1_old_burn', pred_h2_dyad, 'h2')
+),
+tar_target(
+	rss_old_burn_alone,
+	calc_rss(pred_h1_old_burn_alone, 'h1_old_burn', pred_h2_alone, 'h2')
+),
+tar_target(
+	rss_old_burn_social,
+	join_rss(rss_old_burn_alone, rss_old_burn_dyad)
+),
+
+	tar_target(
+		plot_rss_forest_social,
+		plot_rss_social(rss_forest_social, plot_theme()) +
+			labs(x = 'Forest', y = 'logRSS',
+					 title = 'RSS compared to 0 forest (social model)')
+	),
+tar_target(
+	plot_rss_new_burn_social,
+	plot_rss_social(rss_new_burn_social, plot_theme()) +
+		labs(x = 'Distance to new burn (km)', y = 'logRSS',
+				 title = 'RSS compared to median distance to new burn (social model)')
+),
+tar_target(
+	plot_rss_old_burn_social,
+	plot_rss_social(rss_old_burn_social, plot_theme()) +
+		labs(x = 'Distance to old burn (km)', y = 'logRSS',
+				 title = 'RSS compared to median distance to old burn (social model)')
+),
+
+tar_target(
+	social_rss_plots,
+	save_social_rss_plot(plot_rss_forest_social, "rss_forest_social",
+								plot_rss_new_burn_social, "rss_new_burn_social",
+								plot_rss_old_burn_social, "rss_old_burn_social")
+)
+
+)
+
+
 
 
 
