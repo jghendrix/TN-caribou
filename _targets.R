@@ -100,13 +100,8 @@ targets_prep <- c(
 	),
 
 	tar_target(
-		locs_nn,
-		nn(locs_prep)
-	),
-
-	tar_target(
 		split_key,
-		unique(locs_nn[, .SD, .SDcols = c(split_by, 'tar_group')])
+		unique(locs_prep[, .SD, .SDcols = c(split_by, 'tar_group')])
 	),
 	tar_target(
 		burn_prep,
@@ -120,6 +115,11 @@ targets_prep <- c(
 	tar_target(
 		new_burn,
 		split_burn(burn_prep, "new")
+	),
+
+	tar_target(
+		locs_nn,
+		nn(locs_prep)
 	)
 )
 
@@ -128,9 +128,9 @@ targets_prep <- c(
 targets_tracks <- c(
 	tar_target(
 		tracks,
-		make_track(locs_nn, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
+		make_track(locs_prep, x_, y_, t_, all_cols = TRUE, crs = 4326) |>
 			transform_coords(crs_to = crs),
-		pattern = map(locs_nn)
+		pattern = map(locs_prep)
 	),
 	tar_target(
 		tracks_resampled,
@@ -178,7 +178,7 @@ targets_extract <- c(
 	),
 
 	tar_target(
-		tracks_roads,
+		tracks_full,
 		dist_to_roads(
 			tracks_w_both,
 			crs,
@@ -219,7 +219,7 @@ targets_distributions <- c(
 targets_fire <- c(
 	tar_target(
 		model_prep,
-		prepare_model(tracks_roads)
+		prepare_model(tracks_full, locs_nn)
 ),
 	tar_target(
 		fire_model,
@@ -734,6 +734,38 @@ targets_rss_road_seasonal <- c(
 		plot_rss_seasonal(rss_s_minor, plot_theme(), "minor roads")
 	)
 )
+
+
+# Targets: incorporating sociality into fire model ----------------------------------------------------------
+
+# dyad formation is pretty rare, more common in winter ~16% but very rare in calving and spring migration
+# indivs vary a bit too but only in winter is it above 10% for every animal, let's just focus on winter for the social model for now
+
+targets_social <- c(
+	tar_target(
+		social_model,
+		model_fire_social(model_prep)
+	),
+	tar_target(
+		social_model_check,
+		model_check(social_model)
+	)
+)
+
+# Social model output ----------------------
+targets_social_effects <- c(
+	tar_target(
+		indiv_social,
+		indiv_estimates(social_model)
+	),
+	tar_target(
+		social_boxplot,
+		plot_box_horiz(indiv_social, plot_theme(), "social")
+	)
+)
+
+
+
 
 # Targets: all ------------------------------------------------------------
 # Automatically grab and combine all the "targets_*" lists above

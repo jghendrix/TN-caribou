@@ -1,7 +1,7 @@
 #' @title Prepare model data
 #' @export
 #' @author Jack G Hendrix
-prepare_model <- function(DT) {
+prepare_model <- function(DT, dyads) {
 	DT[, indiv_step_id := paste(Animal_ID, step_id_, sep = '_')]
 
 	# Grouping together landcover categories into more meaningful levels
@@ -38,4 +38,13 @@ prepare_model <- function(DT) {
 	DT[, season := ifelse(season == ("SM"), "spring_migration", season)]
 
 	DT[, season := as.factor(season)]
+
+	DT %<>% mutate(Animal_ID = as.factor(Animal_ID))
+
+	# could move this to nn()
+	dyads %<>% dplyr::select(c(Animal_ID, t1_ = t_, NN_ID = NN, NN_dist = distance, in_group)) %>%
+		mutate(Animal_ID = as.factor(Animal_ID))
+
+	DT <- left_join(DT, dyads, by = c("Animal_ID", "t1_"))
+
 	}
