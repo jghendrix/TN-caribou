@@ -14,7 +14,10 @@ ggplot(data, aes(x, rss)) +
 		geom_line(aes(group = id , alpha = .0001),
 							linetype = 'twodash',
 							show.legend = F) +
-		geom_smooth(size = 1.5) +
+	geom_smooth(size = 1.2,
+							colour = "black",
+							method = "lm",
+							formula = y ~ log(x+1)) +
 		geom_hline(
 			yintercept = 0,
 			colour = "black",

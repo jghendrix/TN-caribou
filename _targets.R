@@ -1024,11 +1024,17 @@ targets_rss_road_social <- c(
 )
 
 
+# Targets: comparing sociality to variation in selection
+targets_social_variation <- c(
+	tar_target(
+		social_coef,
+		social_variation(model_prep, s_indiv_fire, s_indiv_road)
+	)
+
+	# ^ There's no connection between degree of sociality and differences in selection across individuals. at least for the most individually variable seasons & relationships, that is
 
 
-
-
-
+)
 # Targets: all ------------------------------------------------------------
 # Automatically grab and combine all the "targets_*" lists above
 lapply(grep('targets', ls(), value = TRUE), get)
