@@ -741,98 +741,98 @@ targets_rss_road_seasonal <- c(
 # dyad formation is pretty rare, more common in winter ~16% but very rare in calving and spring migration
 # indivs vary a bit too but only in winter is it above 10% for every animal, let's just focus on winter for the social model for now
 
-targets_social <- c(
+targets_social_fire <- c(
 	tar_target(
-		social_model,
+		social_fire_model,
 		model_fire_social(model_prep)
 	),
 	tar_target(
-		social_model_check,
-		model_check(social_model)
+		social_fire_model_check,
+		model_check(social_fire_model)
 	)
 )
 
-# Social model output ----------------------
-targets_social_effects <- c(
+# Targets: Social model output ----------------------
+targets_social_fire_effects <- c(
 	tar_target(
-		indiv_social,
-		indiv_estimates(social_model)
+		indiv_social_fire,
+		indiv_estimates(social_fire_model)
 	),
 	tar_target(
-		social_boxplot,
-		plot_box_horiz(indiv_social, plot_theme(), "social")
+		social_fire_boxplot,
+		plot_box_horiz(indiv_social_fire, plot_theme(), "social fire")
 	)
 )
 
 # Targets: RSS from social fire model -----------------------------------------------------------
-targets_rss_social <- c(
+targets_rss_fire_social <- c(
 	tar_target(
-		pred_h1_forest_dyad,
+		fire_pred_h1_forest_dyad,
 		predict_h1_forest(subset(model_prep, season == "winter"),
-											social_model, "dyad")
+											social_fire_model, "fire dyad")
 	),
 tar_target(
-	pred_h1_forest_alone,
+	fire_pred_h1_forest_alone,
 	predict_h1_forest(subset(model_prep, season == "winter"),
-										social_model, "alone")
+										social_fire_model, "fire alone")
 ),
 
 
 tar_target(
 	pred_h1_new_burn_alone,
 	predict_h1_new_burn_social(subset(model_prep, season == "winter"),
-										social_model, "alone")
+										social_fire_model, "alone")
 ),
 tar_target(
 	pred_h1_new_burn_dyad,
 	predict_h1_new_burn_social(subset(model_prep, season == "winter"),
-														 social_model, "dyad")
+														 social_fire_model, "dyad")
 ),
 
 tar_target(
 	pred_h1_old_burn_alone,
 	predict_h1_old_burn_social(subset(model_prep, season == "winter"),
-														 social_model, "alone")
+														 social_fire_model, "alone")
 ),
 tar_target(
 	pred_h1_old_burn_dyad,
 	predict_h1_old_burn_social(subset(model_prep, season == "winter"),
-														 social_model, "dyad")
+														 social_fire_model, "dyad")
 ),
 
 
 tar_target(
-	pred_h2_dyad,
+	fire_pred_h2_dyad,
 	predict_h2(subset(model_prep, season == "winter"),
-						 social_model, "dyad")
+						 social_fire_model, "fire dyad")
 ),
 tar_target(
-	pred_h2_alone,
+	fire_pred_h2_alone,
 	predict_h2(subset(model_prep, season == "winter"),
-						 social_model, "alone")
+						 social_fire_model, "fire alone")
 ),
 
 	tar_target(
-		rss_forest_dyad,
-		calc_rss(pred_h1_forest_dyad, 'h1_forest', pred_h2_dyad, 'h2')
+		fire_rss_forest_dyad,
+		calc_rss(fire_pred_h1_forest_dyad, 'h1_forest', fire_pred_h2_dyad, 'h2')
 	),
 	tar_target(
-		rss_forest_alone,
-		calc_rss(pred_h1_forest_alone, 'h1_forest', pred_h2_alone, 'h2')
+		fire_rss_forest_alone,
+		calc_rss(fire_pred_h1_forest_alone, 'h1_forest', fire_pred_h2_alone, 'h2')
 	),
 	tar_target(
-		rss_forest_social,
-		join_rss(rss_forest_alone, rss_forest_dyad)
+		fire_rss_forest_social,
+		join_rss(fire_rss_forest_alone, fire_rss_forest_dyad)
 	),
 
 
 tar_target(
 	rss_new_burn_dyad,
-	calc_rss(pred_h1_new_burn_dyad, 'h1_new_burn', pred_h2_dyad, 'h2')
+	calc_rss(pred_h1_new_burn_dyad, 'h1_new_burn', fire_pred_h2_dyad, 'h2')
 ),
 tar_target(
 	rss_new_burn_alone,
-	calc_rss(pred_h1_new_burn_alone, 'h1_new_burn', pred_h2_alone, 'h2')
+	calc_rss(pred_h1_new_burn_alone, 'h1_new_burn', fire_pred_h2_alone, 'h2')
 ),
 tar_target(
 	rss_new_burn_social,
@@ -841,11 +841,11 @@ tar_target(
 
 tar_target(
 	rss_old_burn_dyad,
-	calc_rss(pred_h1_old_burn_dyad, 'h1_old_burn', pred_h2_dyad, 'h2')
+	calc_rss(pred_h1_old_burn_dyad, 'h1_old_burn', fire_pred_h2_dyad, 'h2')
 ),
 tar_target(
 	rss_old_burn_alone,
-	calc_rss(pred_h1_old_burn_alone, 'h1_old_burn', pred_h2_alone, 'h2')
+	calc_rss(pred_h1_old_burn_alone, 'h1_old_burn', fire_pred_h2_alone, 'h2')
 ),
 tar_target(
 	rss_old_burn_social,
@@ -853,32 +853,177 @@ tar_target(
 ),
 
 	tar_target(
-		plot_rss_forest_social,
-		plot_rss_social(rss_forest_social, plot_theme()) +
+		fire_plot_rss_forest_social,
+		plot_rss_social(fire_rss_forest_social, plot_theme()) +
 			labs(x = 'Forest', y = 'logRSS',
-					 title = 'RSS compared to 0 forest (social model)')
+					 title = 'RSS compared to 0 forest (social fire model)')
 	),
 tar_target(
 	plot_rss_new_burn_social,
 	plot_rss_social(rss_new_burn_social, plot_theme()) +
-		labs(x = 'Distance to new burn (km)', y = 'logRSS',
+		labs(x = 'Distance to new burn (m)', y = 'logRSS',
 				 title = 'RSS compared to median distance to new burn (social model)')
 ),
 tar_target(
 	plot_rss_old_burn_social,
 	plot_rss_social(rss_old_burn_social, plot_theme()) +
-		labs(x = 'Distance to old burn (km)', y = 'logRSS',
+		labs(x = 'Distance to old burn (m)', y = 'logRSS',
 				 title = 'RSS compared to median distance to old burn (social model)')
 ),
 
 tar_target(
-	social_rss_plots,
-	save_social_rss_plot(plot_rss_forest_social, "rss_forest_social",
+	social_fire_rss_plots,
+	save_social_rss_plot(fire_plot_rss_forest_social, "rss_forest_social_fire",
 								plot_rss_new_burn_social, "rss_new_burn_social",
 								plot_rss_old_burn_social, "rss_old_burn_social")
 )
 
 )
+
+
+
+
+
+# Targets: incorporating sociality into roads model ----------------
+
+targets_social_roads <- c(
+	tar_target(
+		social_road_model,
+		model_road_social(model_prep)
+	),
+	tar_target(
+		social_road_model_check,
+		model_check(social_road_model)
+	)
+)
+
+# Targets: Social model output ----------------------
+targets_social_road_effects <- c(
+	tar_target(
+		indiv_social_road,
+		indiv_estimates(social_road_model)
+	),
+	tar_target(
+		social_road_boxplot,
+		plot_box_horiz(indiv_social_road, plot_theme(), "social road")
+	)
+)
+
+# Targets: RSS from social road model -----------------------------------------------------------
+targets_rss_road_social <- c(
+	tar_target(
+		road_pred_h1_forest_dyad,
+		predict_h1_forest(subset(model_prep, season == "winter"),
+											social_road_model, "road dyad")
+	),
+	tar_target(
+		road_pred_h1_forest_alone,
+		predict_h1_forest(subset(model_prep, season == "winter"),
+											social_road_model, "road alone")
+	),
+
+	tar_target(
+		road_pred_h2_dyad,
+		predict_h2(subset(model_prep, season == "winter"),
+							 social_road_model, "road dyad")
+	),
+	tar_target(
+		road_pred_h2_alone,
+		predict_h2(subset(model_prep, season == "winter"),
+							 social_road_model, "road alone")
+	),
+
+	tar_target(
+		road_rss_forest_dyad,
+		calc_rss(road_pred_h1_forest_dyad, 'h1_forest', road_pred_h2_dyad, 'h2')
+	),
+	tar_target(
+		road_rss_forest_alone,
+		calc_rss(road_pred_h1_forest_alone, 'h1_forest', road_pred_h2_alone, 'h2')
+	),
+	tar_target(
+		road_rss_forest_social,
+		join_rss(road_rss_forest_alone, road_rss_forest_dyad)
+	),
+
+
+	tar_target(
+		pred_h1_tch_alone,
+		predict_h1_tch_social(subset(model_prep, season == "winter"),
+													social_road_model, "alone")
+	),
+	tar_target(
+		pred_h1_tch_dyad,
+		predict_h1_tch_social(subset(model_prep, season == "winter"),
+													social_road_model, "dyad")
+	),
+
+	tar_target(
+		pred_h1_minor_alone,
+		predict_h1_minor_social(subset(model_prep, season == "winter"),
+														social_road_model, "alone")
+	),
+	tar_target(
+		pred_h1_minor_dyad,
+		predict_h1_minor_social(subset(model_prep, season == "winter"),
+														social_road_model, "dyad")
+	),
+
+	tar_target(
+		rss_tch_dyad,
+		calc_rss(pred_h1_tch_dyad, 'h1_tch', road_pred_h2_dyad, 'h2')
+	),
+	tar_target(
+		rss_tch_alone,
+		calc_rss(pred_h1_tch_alone, 'h1_tch', road_pred_h2_alone, 'h2')
+	),
+	tar_target(
+		rss_tch_social,
+		join_rss(rss_tch_alone, rss_tch_dyad)
+	),
+
+	tar_target(
+		rss_minor_dyad,
+		calc_rss(pred_h1_minor_dyad, 'h1_minor', road_pred_h2_dyad, 'h2')
+	),
+	tar_target(
+		rss_minor_alone,
+		calc_rss(pred_h1_minor_alone, 'h1_minor', road_pred_h2_alone, 'h2')
+	),
+	tar_target(
+		rss_minor_social,
+		join_rss(rss_minor_alone, rss_minor_dyad)
+	),
+
+	tar_target(
+		road_plot_rss_forest_social,
+		plot_rss_social(road_rss_forest_social, plot_theme()) +
+			labs(x = 'Forest', y = 'logRSS',
+					 title = 'RSS compared to 0 forest (social road model)')
+	),
+	tar_target(
+		plot_rss_tch_social,
+		plot_rss_social(rss_tch_social, plot_theme()) +
+			labs(x = 'Distance to TCH (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance to TCH (social model)')
+	),
+	tar_target(
+		plot_rss_minor_social,
+		plot_rss_social(rss_minor_social, plot_theme()) +
+			labs(x = 'Distance to minor roads (m)', y = 'logRSS',
+					 title = 'RSS compared to median distance to minor roads (social model)')
+	),
+
+	tar_target(
+		social_road_rss_plots,
+		save_social_rss_plot(road_plot_rss_forest_social, "road_rss_forest_social",
+												 plot_rss_tch_social, "rss_tch_social",
+												 plot_rss_minor_social, "rss_minor_social")
+	)
+
+)
+
+
 
 
 

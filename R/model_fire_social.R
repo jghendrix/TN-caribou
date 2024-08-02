@@ -10,7 +10,6 @@ model_fire_social <- function(DT) {
 			forest +
 			I(log(sl_)):open +
 			open +
-			in_group +
 			forest:in_group +
 			open:in_group +
 			I(log(dist_to_new_burn + 1)) +
