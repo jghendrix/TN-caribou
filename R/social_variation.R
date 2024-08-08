@@ -9,13 +9,13 @@ social_variation <- function(dyads, fire_summary, road_summary) {
 		ungroup(in_group) %>%
 		mutate(prop = n/sum(n))
 
-	noNA <- props %>% filter(!is.na(in_group)) %>%
+	noNA <- props %>% dplyr::filter(!is.na(in_group)) %>%
 		group_by(Animal_ID, season) %>%
 		mutate(prop_noNA = n/sum(n)) %>%
 		select(-c(n, prop))
 
 props <- left_join(props, noNA, by = c("Animal_ID", "season", "in_group")) %>%
-	filter(in_group == "alone")
+	dplyr::filter(in_group == "alone")
 	# if you filter by = "dyad", some individuals were totally asocial and the zeros get dropped out
 
 # Where did we see the biggest individual variation?
@@ -25,7 +25,7 @@ props <- left_join(props, noNA, by = c("Animal_ID", "season", "in_group")) %>%
 # new burn spring, calving, and autumn, one outlier each (and not the same??)
 
 coefs <- fire_summary %>% dplyr::filter(term == "I(log(dist_to_old_burn + 1))") %>%
-	select(c(Animal_ID = id, season = seasonality, fire_coef = estimate))
+	dplyr::select(c(Animal_ID = id, season = seasonality, fire_coef = estimate))
 
 df <- left_join(props, coefs, by = c("Animal_ID", "season"))
 
@@ -36,7 +36,7 @@ ggplot(subset(df, season == "spring_migration"), aes(x = prop, y = fire_coef)) +
 # not that clear of a relationship for old burns during spring migration
 # what about TCH calving?
 coefs <- road_summary %>% dplyr::filter(term == "I(log(dist_to_tch + 1))") %>%
-	select(c(Animal_ID = id, season = seasonality, road_coef = estimate))
+	dplyr::select(c(Animal_ID = id, season = seasonality, road_coef = estimate))
 
 df <- left_join(props, coefs, by = c("Animal_ID", "season"))
 
